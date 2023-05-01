@@ -11,6 +11,7 @@ class MainWindow(Widget):
 
     def move_top(self):
         # TODO: IMPLEMENT ME
+        #self.move('y', 1, event)
         # メモ：ZaberControllerインスタンスのmove_top関数を呼び出す
         pass
 
@@ -32,6 +33,7 @@ class MainApp(App):
         window = MainWindow()
         return window
 
+    #def move(self, axis: str, direction: int):
 
 if __name__ == '__main__':
     MainApp().run()
