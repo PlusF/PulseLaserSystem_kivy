@@ -1,31 +1,125 @@
 #:kivy 1.0.9
+<MoveButton@Button>:
+    size_hint:0.3,0.25
+    background_color: (166/255,166/255,166/255,1)   
+
+<MoveImage@Image>:
+    center_x: self.parent.center_x
+    center_y: self.parent.center_y
+    
+<LaserLabel@Label>:
+    color:1,1,1,1
+    font_size:30
+<left_top@FloatLayout>:
+    x:root.x
+    top:root.top
+    size:root.width/2, root.height/2
+
+# <box@FloatLayout>:
+#     # pos: root.x, root.top - self.height
+#     # size:root.width/2, root.height/2
+# <right_top@FloatLayout>:
+#     pos: root.x, root.top - self.height
+#     size:root.width/2, root.height/2
+# <right_top@FloatLayout>:
+#     x:root.width-self.width
+#     top:root.top
+#     size:root.width/2, root.height/2
+
+# <left_bottom@FloatLayout>:
+#     x:root.x
+#     top:root.top
+#     size:root.width/2, root.height/2
+
+# <right_bottom@FloatLayout>:
+#     x:root.width-self.width
+#     bottom:root.bottom
+#     size:root.width/2, root.height/2
 
 <MainWindow>:
+#左上
     BoxLayout:
-        center_x: root.width / 2
-        center_y: root.height / 2
+        id: MorA
         orientation: "vertical"
+        pos: root.x, root.top - self.height
+        size:root.width/2, root.height/2
+        BoxLayout:
+            orientation: "horizontal"
+            id: auto_emit
+            Label:
+                id: label_auto_emit_on
+                text: "Auto" 
+                color:1,1,1,1
+            Switch:
+                id: switch_auto_emit
+                size: 
+        BoxLayout:
+            orientation: "horizontal"
+            id: manual_emit
+            Label:
+                id: label_manual_emit_on
+                text: 
+                    "Laser" 
+                color:1,1,1,1
+            Switch:
+                id: switch_manual_emit
+                size: 
+#右上
+    FloatLayout:
+        id: consition
+        pos: root.width-self.width, root.top - self.height
+        size:root.width/2, root.height/2
 
-        Button:
-            id: button_top
-            text:
-            on_press:
-            on_release:
+#左下    
+    FloatLayout:
+        #id: 
+        pos: root.x, root.y
+        size:root.width/2, root.height/2
+#右下
+    FloatLayout:
+        id: move
+        pos: root.width-self.width, root.y
+        size:root.width/2, root.height/2
+        AnchorLayout:
+            pos: self.parent.pos
+            size:self.parent.size
+            anchor_x:"right"
+            anchor_y:"center"
+            MoveButton:
+                id: button_right
+                on_press:
+                    root.move_right()
+                on_release:
+                MoveImage:
+                    id: img_right
+                    source: "source/right.png"
 
-        Button:
-            id: button_bottom
-            text:
-            on_press:
-            on_release:
+        AnchorLayout:
+            pos: self.parent.pos
+            size:self.parent.size
+            anchor_x:"left"
+            anchor_y:"center"
+            MoveButton:
+                id: button_left
+                on_press:
+                    root.move_left()
+                on_release:
+                MoveImage:
+                    id: img_left
+                    source: "source/left.png"
+    
+    # box:
+    #     id: box_id
+    #     pos:    root.x, root.top - self.height
+    #     size:root.width/2, root.height/2
+    #     Button:#ボタンに関してはsizeは初期値としてselfを参照してる（変更不可）くせにposはselfでは参照できない意味不
+    #         #size:   box_id.width/3,box_id.height/3
+    #         size_hint:0.5,0.5
+    #         pos:    box_id.x ,box_id.y
+    #         text:   "Kivy"
+    #         color:  0,1,0,1
+                    
+        
+        
 
-        Button:
-            id: button_left
-            text:
-            on_press:
-            on_release:
-
-        Button:
-            id: button_right
-            text:
-            on_press:
-            on_release:
+            
