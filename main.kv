@@ -69,74 +69,146 @@
                         step: 1
                         on_value: 
 
+        #２，３：移動，オートか手動か
+        TabbedPanel:
+            size_hint_y:2
+            do_default_tab: False
+            #手動で移動するモード
+            TabbedPanelItem:
+                text: "Manual Mode"
+                Vbox:
 
-        #２：レーザー，オートか手動か
-        Hbox:
-            id: MorA
-            ToggleButton22:
-                id: toggle_auto_emit
-                text: "Auto"
-                color: (1,1,1,1) if toggle_manual_emit.state == "normal" else (0.5,0.5,0.5,1)
-                disabled: "" if toggle_manual_emit.state == "normal" else True
-                on_press: root.check("auto")
-                on_release: 
+                #２：レーザー，オートか手動か
+                    Hbox:
+                        id: Auto_or_Manual
+                        ToggleButton22:
+                            id: toggle_auto_emit
+                            text: "Auto"
+                            #押した時はdown,押してない時はnormal 
+                            color: (1,1,1,1) if toggle_manual_emit.state == "normal" else (0.5,0.5,0.5,1)
+                            #disabled: "" if toggle_manual_emit.state == "normal" else True
+                            on_press: 
+                                root.check("auto")
+                                toggle_manual_emit.state = "normal"
+                            on_release: 
 
-            ToggleButton22:
-                id: toggle_manual_emit
-                text:"Manual\nEmit" 
-                color:(1,1,1,1) if toggle_auto_emit.state == "normal" else (0.5,0.5,0.5,1) 
-                disabled: "" if toggle_auto_emit.state == "normal" else True
-                on_press: root.check("manual")
-                on_release: 
-        
-        #３：ステージ移動
-        Hbox:
-            id: move
-            #左
-            Vbox:
-                id: left
-                MoveButton:
-                    id: left_button
-                    on_press:
-                        root.move_left()
-                    on_release:
-                    MoveImage:
-                        id: left_arrow
-                        source: "source/left.png"
+                        ToggleButton22:
+                            id: toggle_manual_emit
+                            text:"Manual\n   Emit" 
+                            color:(1,1,1,1) if toggle_auto_emit.state == "normal" else (0.5,0.5,0.5,1) 
+                            #disabled: "" if toggle_auto_emit.state == "normal" else True
+                            on_press: 
+                                root.check("manual")
+                                toggle_auto_emit.state = "normal"
+                            on_release: 
+                    
+                #３：ステージ移動
+                    Hbox:
+                        id: move
+                        #左
+                        Vbox:
+                            id: left
+                            MoveButton:
+                                id: left_button
+                                on_press:
+                                    root.move_left()
+                                on_release:
+                                MoveImage:
+                                    id: left_arrow
+                                    source: "source/left.png"
 
-            #上下
-            Vbox:
-                id: top_and_bottom
-                MoveButton:
-                    id: top_button
-                    on_press:
-                        root.move_top()
-                    on_release:
-                    MoveImage:
-                        id: top_arrow
-                        source: "source/up.png"
-                
-                MoveButton:
-                    id: bottom_button
-                    on_press:
-                        root.move_bottom()
-                    on_release:
-                    MoveImage:
-                        id: bottom_arrow
-                        source: "source/down.png"
+                        #上下
+                        Vbox:
+                            id: top_and_bottom
+                            MoveButton:
+                                id: top_button
+                                on_press:
+                                    root.move_top()
+                                on_release:
+                                MoveImage:
+                                    id: top_arrow
+                                    source: "source/up.png"
+                            
+                            MoveButton:
+                                id: bottom_button
+                                on_press:
+                                    root.move_bottom()
+                                on_release:
+                                MoveImage:
+                                    id: bottom_arrow
+                                    source: "source/down.png"
 
-            #右
-            Vbox:
-                id: right
-                MoveButton:
-                    id: right_button
-                    on_press:
-                        root.move_right()
-                    on_release:
-                    MoveImage:
-                        id: right_arrow
-                        source: "source/right.png"
+                        #右
+                        Vbox:
+                            id: right
+                            MoveButton:
+                                id: right_button
+                                on_press:
+                                    root.move_right()
+                                on_release:
+                                MoveImage:
+                                    id: right_arrow
+                                    source: "source/right.png"
 
+            #オートで移動するモード                        
+            TabbedPanelItem:
+                text: "Program Mode"
+                Vbox:
+                    Hbox:
+                        ToggleButton22:
+                            id: toggle_line
+                            text: "Line"
+                            color: (1,1,1,1) if toggle_rect.state == "normal" else (0.5,0.5,0.5,1)
+                            #disabled: "" if toggle_rect.state == "normal" else True
+                            on_press: 
+                                toggle_rect.state = "normal"
+                        ToggleButton22:
+                            id: toggle_rect
+                            text: "Rect"
+                            color: (1,1,1,1) if toggle_line.state == "normal" else (0.5,0.5,0.5,1)
+                            #disabled: "" if toggle_line.state == "normal" else True
+                            on_press: 
+                                toggle_line.state = "normal"
+                    Hbox:
+                        Vbox:
+                            size_hint_x:2
+                            Hbox:
+                                Label22:
+                                    text: "ΔX[μm]"
+                                TextInput22:
+                                    id: deltaX
+                                    text: "100"
+                                    on_text:
+                                        root.delta_x = int(self.text)
+                            Hbox:
+                                Label22:
+                                    text: "ΔY[μm]"
+                                TextInput22:
+                                    id: deltaY
+                                    text: "50"
+                                    on_text:
+                                        root.delta_y = int(self.text)
+
+                        Vbox:
+                            Button22:
+                                id: program_mode_start
+                                text:"Start"
+                                on_press:
+                                    
+
+                    Hbox:
+                        size_hint_y:2
+                        canvas:
+                            Line:
+                                id: laser_line
+                                points:(self.x+self.width/2, self.y+self.height/2, self.x+self.width/2+root.delta_x , self.y+self.height/2+root.delta_y) if toggle_line.state == "down" else (0,0)
+                                width:1
+                            
+                            Line:
+                                id: laser_rect
+                                points:(self.x+self.width/2, self.y+self.height/2, self.x+self.width/2+root.delta_x, self.y+self.height/2, self.x+self.width/2+root.delta_x, self.y+self.height/2+root.delta_y, self.x+self.width/2, self.y+self.height/2+root.delta_y, self.x+self.width/2, self.y+self.height/2) if toggle_rect.state == "down" else (0,0)
+                                width:1
+               
         #４：xy座標とソフト終了ボタン   
         Vbox:
             id: XY_and_quit
@@ -160,14 +232,14 @@
                 Vbox:
                     id: set_org
                     Button22:
-                        text: "SET_ORG"
+                        text: "Set_Org"
                         on_press: 
                             X.text = "0"
                             Y.text = "0"
             Hbox:
                 id: quit
                 Button22:
-                    text:"QUIT"
+                    text:"Quit"
                     
         
         
