@@ -1,123 +1,170 @@
 #:kivy 1.0.9
 <MoveButton@Button>:
-    size_hint:0.3,0.25
     background_color: (166/255,166/255,166/255,1)   
 
 <MoveImage@Image>:
     center_x: self.parent.center_x
     center_y: self.parent.center_y
-    
-<LaserLabel@Label>:
-    color:1,1,1,1
-    font_size:30
-<left_top@FloatLayout>:
-    x:root.x
-    top:root.top
-    size:root.width/2, root.height/2
+<Vbox@BoxLayout>:
+    orientation: "vertical"
 
-# <box@FloatLayout>:
-#     # pos: root.x, root.top - self.height
-#     # size:root.width/2, root.height/2
-# <right_top@FloatLayout>:
-#     pos: root.x, root.top - self.height
-#     size:root.width/2, root.height/2
-# <right_top@FloatLayout>:
-#     x:root.width-self.width
-#     top:root.top
-#     size:root.width/2, root.height/2
+<Hbox@BoxLayout>:
+    orientation: "horizontal"
 
-# <left_bottom@FloatLayout>:
-#     x:root.x
-#     top:root.top
-#     size:root.width/2, root.height/2
-
-# <right_bottom@FloatLayout>:
-#     x:root.width-self.width
-#     bottom:root.bottom
-#     size:root.width/2, root.height/2
+<Label22@Label>:
+    font_size: 22
+<TextInput22@TextInput>:
+    font_size: 22
+<ToggleButton22@ToggleButton>:
+    font_size: 22
+<Button22@Button>:
+    font_size: 22
 
 <MainWindow>:
-#左上
-    BoxLayout:
-        id: MorA
-        orientation: "vertical"
-        pos: root.x, root.top - self.height
-        size:root.width/2, root.height/2
-        BoxLayout:
-            orientation: "horizontal"
-            id: auto_emit
-            Label:
-                id: label_auto_emit_on
-                text: "Auto" 
-                color:1,1,1,1
-            Switch:
-                id: switch_auto_emit
-                size: 
-        BoxLayout:
-            orientation: "horizontal"
-            id: manual_emit
-            Label:
-                id: label_manual_emit_on
-                text: 
-                    "Laser" 
-                color:1,1,1,1
-            Switch:
-                id: switch_manual_emit
-                size: 
-#右上
-    FloatLayout:
-        id: consition
-        pos: root.width-self.width, root.top - self.height
-        size:root.width/2, root.height/2
+    Vbox:
+        id: main
+        #pos: root.x, root.top - self.height
+        #size:root.width/2, root.height/2
+        Vbox:
+            id: condition
+            Vbox:
+                id: freq
+                Hbox:
+                    Label22:
+                        id: freq_text
+                        text: "Frequancy: "
+                    
+                    TextInput22:
+                        id: freq_input
+                        text: str(freq_slider.value)
+                        on_text: 
+                            freq_slider.value = self.text
+                Hbox:
+                    Slider:
+                        id: freq_slider
+                        min: 16
+                        max: 10000
+                        step: 1
+                        on_value: 
+                    
+            Vbox:
+                id: speed
+                Hbox:
+                    Label22:
+                        id: speed_text
+                        text: "Speed: "
+                    
+                    TextInput22:
+                        id: speed_input
+                        text: str(speed_slider.value)
+                        on_text: 
+                            speed_slider.value = self.text
+                Hbox:
+                    Slider:
+                        id: speed_slider
+                        min: 1
+                        max: 1000
+                        step: 1
+                        on_value: 
 
-#左下    
-    FloatLayout:
-        #id: 
-        pos: root.x, root.y
-        size:root.width/2, root.height/2
-#右下
-    FloatLayout:
-        id: move
-        pos: root.width-self.width, root.y
-        size:root.width/2, root.height/2
-        AnchorLayout:
-            pos: self.parent.pos
-            size:self.parent.size
-            anchor_x:"right"
-            anchor_y:"center"
-            MoveButton:
-                id: button_right
-                on_press:
-                    root.move_right()
-                on_release:
-                MoveImage:
-                    id: img_right
-                    source: "source/right.png"
 
-        AnchorLayout:
-            pos: self.parent.pos
-            size:self.parent.size
-            anchor_x:"left"
-            anchor_y:"center"
-            MoveButton:
-                id: button_left
-                on_press:
-                    root.move_left()
-                on_release:
-                MoveImage:
-                    id: img_left
-                    source: "source/left.png"
-    
-    # box:
-    #     id: box_id
-    #     pos:    root.x, root.top - self.height
-    #     size:root.width/2, root.height/2
-    #     Button:#ボタンに関してはsizeは初期値としてselfを参照してる（変更不可）くせにposはselfでは参照できない意味不
-    #         #size:   box_id.width/3,box_id.height/3
-    #         size_hint:0.5,0.5
-    #         pos:    box_id.x ,box_id.y
-    #         text:   "Kivy"
-    #         color:  0,1,0,1
+       
+
+        
+        Hbox:
+            id: MorA
+            ToggleButton22:
+                id: toggle_auto_emit
+                text: "Auto"
+                color: (1,1,1,1) if toggle_manual_emit.state == "normal" else (0.5,0.5,0.5,1)
+                disabled: "" if toggle_manual_emit.state == "normal" else True
+                on_press: root.check("auto")
+                on_release: 
+
+            ToggleButton22:
+                id: toggle_manual_emit
+                text:"Laser" 
+                color:(1,1,1,1) if toggle_auto_emit.state == "normal" else (0.5,0.5,0.5,1) 
+                disabled: "" if toggle_auto_emit.state == "normal" else True
+                on_press: root.check("manual")
+                on_release: 
+
+        Hbox:
+            id: move
+            Vbox:
+                id: left
+                MoveButton:
+                    id: left_button
+                    on_press:
+                        root.move_left()
+                    on_release:
+                    MoveImage:
+                        id: left_arrow
+                        source: "source/left.png"
+
+            
+            Vbox:
+                id: top_and_bottom
+                MoveButton:
+                    id: top_button
+                    on_press:
+                        root.move_top()
+                    on_release:
+                    MoveImage:
+                        id: top_arrow
+                        source: "source/up.png"
+                
+                MoveButton:
+                    id: bottom_button
+                    on_press:
+                        root.move_bottom()
+                    on_release:
+                    MoveImage:
+                        id: bottom_arrow
+                        source: "source/down.png"
+
+            Vbox:
+                id: right
+                MoveButton:
+                    id: right_button
+                    on_press:
+                        root.move_right()
+                    on_release:
+                    MoveImage:
+                        id: right_arrow
+                        source: "source/right.png"
+
+           
+        Vbox:
+
+            Hbox:
+                id: XY
+                Vbox:
+                    Hbox:
+                        Label22:
+                            text: "X[μm]: "
+                        Label22:
+                            id: X
+                            text: "?"
+                    
+                    Hbox:
+                        Label22:
+                            text: "Y[μm]: "
+                        Label22:
+                            id: Y
+                            text: "?"
+                
+                Vbox:
+                    id: set_org
+                    Button22:
+                        text: "SET_ORG"
+                        on_press: 
+                            X.text = "0"
+                            Y.text = "0"
+            Hbox:
+                id: quit
+                Button22:
+                    text:"QUIT"
                     
         
         
