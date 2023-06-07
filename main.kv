@@ -83,7 +83,7 @@
 
             ToggleButton22:
                 id: toggle_manual_emit
-                text:"Laser" 
+                text:"Manual\nEmit" 
                 color:(1,1,1,1) if toggle_auto_emit.state == "normal" else (0.5,0.5,0.5,1) 
                 disabled: "" if toggle_auto_emit.state == "normal" else True
                 on_press: root.check("manual")

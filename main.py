@@ -4,7 +4,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.core.window import Window
 # メモ：ZaberControllerクラスをインポート
 
-Window.size = (300, 700)
+Window.size = (500, 1000)
 
 class MainWindow(BoxLayout):
     def __init__(self, **kwargs):
