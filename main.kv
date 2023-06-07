@@ -33,7 +33,7 @@
                 Hbox:
                     Label22:
                         id: freq_text
-                        text: "Frequancy: "
+                        text: "Frequancy [Hz]: "
                     
                     TextInput22:
                         id: freq_input
@@ -54,7 +54,7 @@
                 Hbox:
                     Label22:
                         id: speed_text
-                        text: "Speed: "
+                        text: "Speed [μm/s]: "
                     
                     TextInput22:
                         id: speed_input
@@ -160,6 +160,7 @@
                             text: "Line"
                             color: (1,1,1,1) if toggle_rect.state == "normal" else (0.5,0.5,0.5,1)
                             #disabled: "" if toggle_rect.state == "normal" else True
+                            state: "down"
                             on_press: 
                                 toggle_rect.state = "normal"
                         ToggleButton22:
@@ -174,7 +175,7 @@
                             size_hint_x:2
                             Hbox:
                                 Label22:
-                                    text: "ΔX[μm]"
+                                    text: "ΔX [μm]"
                                 TextInput22:
                                     id: deltaX
                                     text: "100"
@@ -182,7 +183,7 @@
                                         root.delta_x = int(self.text)
                             Hbox:
                                 Label22:
-                                    text: "ΔY[μm]"
+                                    text: "ΔY [μm]"
                                 TextInput22:
                                     id: deltaY
                                     text: "50"
@@ -217,14 +218,14 @@
                 Vbox:
                     Hbox:
                         Label22:
-                            text: "X[μm]: "
+                            text: "X [μm]: "
                         Label22:
                             id: X
                             text: "?"
                     
                     Hbox:
                         Label22:
-                            text: "Y[μm]: "
+                            text: "Y [μm]: "
                         Label22:
                             id: Y
                             text: "?"
