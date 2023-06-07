@@ -21,12 +21,13 @@
     font_size: 22
 
 <MainWindow>:
+    #メインのウインドウ
     Vbox:
         id: main
-        #pos: root.x, root.top - self.height
-        #size:root.width/2, root.height/2
+        #１：レーザー条件
         Vbox:
             id: condition
+            #レーザー周波数
             Vbox:
                 id: freq
                 Hbox:
@@ -46,7 +47,8 @@
                         max: 10000
                         step: 1
                         on_value: 
-                    
+
+            #ステージ移動速さ     
             Vbox:
                 id: speed
                 Hbox:
@@ -68,9 +70,7 @@
                         on_value: 
 
 
-       
-
-        
+        #２：レーザー，オートか手動か
         Hbox:
             id: MorA
             ToggleButton22:
@@ -88,9 +88,11 @@
                 disabled: "" if toggle_auto_emit.state == "normal" else True
                 on_press: root.check("manual")
                 on_release: 
-
+        
+        #３：ステージ移動
         Hbox:
             id: move
+            #左
             Vbox:
                 id: left
                 MoveButton:
@@ -102,7 +104,7 @@
                         id: left_arrow
                         source: "source/left.png"
 
-            
+            #上下
             Vbox:
                 id: top_and_bottom
                 MoveButton:
@@ -123,6 +125,7 @@
                         id: bottom_arrow
                         source: "source/down.png"
 
+            #右
             Vbox:
                 id: right
                 MoveButton:
@@ -134,9 +137,9 @@
                         id: right_arrow
                         source: "source/right.png"
 
-           
+        #４：xy座標とソフト終了ボタン   
         Vbox:
-
+            id: XY_and_quit
             Hbox:
                 id: XY
                 Vbox:
