@@ -69,18 +69,19 @@
                         step: 1
                         on_value: 
 
-        #２，３：移動，オートか手動か
+        #2：移動，オートか手動か
         TabbedPanel:
             size_hint_y:2
             do_default_tab: False
-            #手動で移動するモード
+            #2.1：手動で移動するモード
             TabbedPanelItem:
                 text: "Manual Mode"
                 Vbox:
 
-                #２：レーザー，オートか手動か
+                #2.1.1：レーザー，移動している時だけONか，常時ONか
                     Hbox:
                         id: Auto_or_Manual
+                        #移動している時だけON
                         ToggleButton22:
                             id: toggle_auto_emit
                             text: "Auto"
@@ -92,6 +93,7 @@
                                 toggle_manual_emit.state = "normal"
                             on_release: 
 
+                        #常時ON
                         ToggleButton22:
                             id: toggle_manual_emit
                             text:"Manual\n   Emit" 
@@ -102,7 +104,7 @@
                                 toggle_auto_emit.state = "normal"
                             on_release: 
                     
-                #３：ステージ移動
+                #2.1.2：ステージ移動
                     Hbox:
                         id: move
                         #左
@@ -150,11 +152,13 @@
                                     id: right_arrow
                                     source: "source/right.png"
 
-            #オートで移動するモード                        
+            #2.2：オートで移動するモード                        
             TabbedPanelItem:
                 text: "Program Mode"
                 Vbox:
+                    #2.2.1：直線移動か矩形移動か
                     Hbox:
+                        #直線移動
                         ToggleButton22:
                             id: toggle_line
                             text: "Line"
@@ -163,6 +167,7 @@
                             state: "down"
                             on_press: 
                                 toggle_rect.state = "normal"
+                        #矩形移動
                         ToggleButton22:
                             id: toggle_rect
                             text: "Rect"
@@ -170,7 +175,9 @@
                             #disabled: "" if toggle_line.state == "normal" else True
                             on_press: 
                                 toggle_line.state = "normal"
+                    #2.2.2：移動量
                     Hbox:
+                        #移動量
                         Vbox:
                             size_hint_x:2
                             Hbox:
@@ -190,13 +197,14 @@
                                     on_text:
                                         root.delta_y = int(self.text)
 
+                        #移動開始
                         Vbox:
                             Button22:
                                 id: program_mode_start
                                 text:"Start"
                                 on_press:
                                     
-
+                    #2.2.3：図形として描画
                     Hbox:
                         size_hint_y:2
                         canvas:
@@ -210,9 +218,10 @@
                                 points:(self.x+self.width/2, self.y+self.height/2, self.x+self.width/2+root.delta_x, self.y+self.height/2, self.x+self.width/2+root.delta_x, self.y+self.height/2+root.delta_y, self.x+self.width/2, self.y+self.height/2+root.delta_y, self.x+self.width/2, self.y+self.height/2) if toggle_rect.state == "down" else (0,0)
                                 width:1
                
-        #４：xy座標とソフト終了ボタン   
+        #3：xy座標とソフト終了ボタン   
         Vbox:
             id: XY_and_quit
+            #3.1：XY座標
             Hbox:
                 id: XY
                 Vbox:
@@ -237,6 +246,7 @@
                         on_press: 
                             X.text = "0"
                             Y.text = "0"
+            #3.2：終了
             Hbox:
                 id: quit
                 Button22:
