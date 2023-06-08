@@ -185,7 +185,7 @@
                                     text: "ΔX [μm]"
                                 TextInput22:
                                     id: deltaX
-                                    text: "100"
+                                    text: str(root.delta_x)
                                     on_text:
                                         root.delta_x = int(self.text)
                             Hbox:
@@ -193,7 +193,7 @@
                                     text: "ΔY [μm]"
                                 TextInput22:
                                     id: deltaY
-                                    text: "50"
+                                    text: str(root.delta_y)
                                     on_text:
                                         root.delta_y = int(self.text)
 
@@ -217,6 +217,10 @@
                                 id: laser_rect
                                 points:(self.x+self.width/2, self.y+self.height/2, self.x+self.width/2+root.delta_x, self.y+self.height/2, self.x+self.width/2+root.delta_x, self.y+self.height/2+root.delta_y, self.x+self.width/2, self.y+self.height/2+root.delta_y, self.x+self.width/2, self.y+self.height/2) if toggle_rect.state == "down" else (0,0)
                                 width:1
+
+                            Ellipse:
+                                pos: (self.x+self.width/2-4, self.y+self.height/2-4)
+                                size: 8,8
                
         #3：xy座標とソフト終了ボタン   
         Vbox:
