@@ -12,7 +12,7 @@ class PulseLaserController:
         self.ser = ser
         time.sleep(1)
 
-    def set_frq(self, frq: int) -> bool:
+    def emit(self, frq: int) -> bool:
         # 16~10000 Hzのみ許容する
         if 16 <= frq <= 10000:
             self.ser.write(f'{frq}\n'.encode())
