@@ -12,7 +12,7 @@ def control_auto_emission(func):
         auto_on = self.ids.toggle_auto_emit.state == 'down'
         if auto_on:
             self.emit_laser()
-        ret = func()
+        ret = func(*args, **kwargs)
         return ret
     return wrapper
 
