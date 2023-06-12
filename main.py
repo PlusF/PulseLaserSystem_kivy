@@ -3,6 +3,7 @@ from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.core.window import Window, Clock
 from kivy.properties import NumericProperty
+from ConfigLoader import ConfigLoader
 from PulseLaserController import PulseLaserController
 # メモ：ZaberControllerクラスをインポート
 
@@ -25,9 +26,11 @@ class MainWindow(Widget):
         super().__init__(**kwargs)
         Window.bind(on_request_close=self.quit)
 
+        self.cl = ConfigLoader('./config.json')
+
         self.freq: int = 100
         self.speed: float = 100.0
-        self.ser_laser = serial.Serial(port='COM9', baudrate=9600)
+        self.ser_laser = serial.Serial(port=self.cl.port_laser, baudrate=self.cl.baudrate_laser)
         self.laser = PulseLaserController(self.ser_laser)
         # メモ：ZaberControllerクラスのインスタンスを作成
         self.stage = None
