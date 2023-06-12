@@ -147,6 +147,7 @@ from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.core.window import Window, Clock
 from kivy.properties import NumericProperty
+from ConfigLoader import ConfigLoader
 from PulseLaserController import PulseLaserController
 # メモ：ZaberControllerクラスをインポート
 
@@ -169,29 +170,12 @@ class MainWindow(Widget):
         super().__init__(**kwargs)
         Window.bind(on_request_close=self.quit)
 
-=======
-def control_auto_emission(func):
-    def wrapper(self, *args, **kwargs):
-        auto_on = self.ids.toggle_auto_emit.state == 'down'
-        if auto_on:
-            self.emit_laser()
-        ret = func(*args, **kwargs)
-        return ret
-    return wrapper
 
+        self.cl = ConfigLoader('./config.json')
 
-class MainWindow(Widget):
-    pos_x = NumericProperty(0, force_dispatch=True)
-    pos_y = NumericProperty(0, force_dispatch=True)
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        Window.bind(on_request_close=self.quit)
-
->>>>>>> 2ad1dfd67d7d71d37799313f92f37d94273d51cb
         self.freq: int = 100
         self.speed: float = 100.0
-        self.ser_laser = serial.Serial(port='COM9', baudrate=9600)
+        self.ser_laser = serial.Serial(port=self.cl.port_laser, baudrate=self.cl.baudrate_laser)
         self.laser = PulseLaserController(self.ser_laser)
         # メモ：ZaberControllerクラスのインスタンスを作成
         self.stage = None
