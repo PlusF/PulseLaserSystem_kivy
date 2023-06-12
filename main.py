@@ -1,5 +1,7 @@
+import serial
 from kivy.app import App
 from kivy.uix.widget import Widget
+<<<<<<< HEAD
 from kivy.uix.boxlayout import BoxLayout
 from kivy.core.window import Window
 from kivy.properties import NumericProperty
@@ -10,6 +12,11 @@ import time
 from zaber_motion import Units, Library, LogOutputMode
 from zaber_motion.binary import Connection, Device
 
+=======
+from kivy.core.window import Window, Clock
+from kivy.properties import NumericProperty
+from PulseLaserController import PulseLaserController
+>>>>>>> 2ad1dfd67d7d71d37799313f92f37d94273d51cb
 # メモ：ZaberControllerクラスをインポート
 from ZaberController import ZaberController
 # from ds102controller import MySerial, DS102Controller
@@ -20,6 +27,7 @@ from ZaberController import ZaberController
 
 Window.size = (350, 700)
 
+<<<<<<< HEAD
 class MainWindow(BoxLayout):
     delta_x = NumericProperty(100)
     delta_y = NumericProperty(50)
@@ -161,6 +169,26 @@ class MainWindow(Widget):
         super().__init__(**kwargs)
         Window.bind(on_request_close=self.quit)
 
+=======
+def control_auto_emission(func):
+    def wrapper(self, *args, **kwargs):
+        auto_on = self.ids.toggle_auto_emit.state == 'down'
+        if auto_on:
+            self.emit_laser()
+        ret = func(*args, **kwargs)
+        return ret
+    return wrapper
+
+
+class MainWindow(Widget):
+    pos_x = NumericProperty(0, force_dispatch=True)
+    pos_y = NumericProperty(0, force_dispatch=True)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        Window.bind(on_request_close=self.quit)
+
+>>>>>>> 2ad1dfd67d7d71d37799313f92f37d94273d51cb
         self.freq: int = 100
         self.speed: float = 100.0
         self.ser_laser = serial.Serial(port='COM9', baudrate=9600)
