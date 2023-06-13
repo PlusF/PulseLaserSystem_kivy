@@ -6,8 +6,7 @@ from DebugClass import DebugConnection
 # 接続後の初回操作時，positionが[25400, 25400](最大値)になってしまう　電源を落とす直前に[25400, 25400]に移動しておくことで一応対処可能(0.01μmオーダーの誤差はある)
 # システム上でpositionの値域を超えて動かそうとしても止まってしまう
 # システム上は問題ないが現実の最小値(0)まで到達すると座標がリセットされる
-# positonの値域は0~25400
-# メモ：開発環境（自分のPC）で動作確認できるようにしておく
+# positionの値域は0~25400
 
 
 class ZaberController:
@@ -24,7 +23,7 @@ class ZaberController:
         elif config_loader.mode == 'RELEASE':
             self.connection = Connection.open_serial_port(self.port)
 
-        # 引数[0]がパソコンに直接つながれているアクチュエータ，引数[1]が連結されたもう一つのアクチュエータ
+        # [0]がパソコンに直接つながれているアクチュエータ，[1]が連結されたもう一つのアクチュエータ
         self.device_x, self.device_y = self.connection.detect_devices()[:2]
 
     def move_top(self, vel):
@@ -39,7 +38,7 @@ class ZaberController:
     def move_right(self, vel):
         self.device_x.move_velocity(vel, unit=self.unit_vel)
 
-    async def move_absolute(self, position_x, position_y):
+    async def move_absolute_async(self, position_x, position_y):
         # x,yが同時に動く
         if (0 <= position_x <= 25400) and (0 <= position_y <= 25400):
             await asyncio.gather(
@@ -51,7 +50,7 @@ class ZaberController:
             print('move_absolute : positions are out of range')
             return False
 
-    async def move_relative(self, position_x, position_y):
+    async def move_relative_async(self, position_x, position_y):
         # x,yが同時に動く
         position_list = self.get_position_all()
         x = position_list[0] + position_x  # 移動後の座標
@@ -66,8 +65,8 @@ class ZaberController:
             print('move_relative : positions are out of range')
             return False
 
-    async def move_default(self):
-        await self.move_absolute(self.default_position[0], self.default_position[1])
+    async def move_default_async(self):
+        await self.move_absolute_async(self.default_position[0], self.default_position[1])
 
     def get_position_x(self):
         return self.device_x.get_position(unit=self.unit_pos)
