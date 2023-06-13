@@ -89,8 +89,51 @@ class ZaberController:
         self.stop_x()
         self.stop_y()
 
+    def home(self):
+        home_x = self.device_x.home(unit=self.unit_pos)
+        home_y = self.device_y.home(unit=self.unit_pos)
+        return home_x, home_y
+
     def quit(self):
         self.connection.close()
+
+
+import unittest
+import time
+
+
+class ZaberTestCase(unittest.TestCase):  # 微妙．うまく動くかわからん．
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        cl = ConfigLoader('./config.json')
+        self.stage = ZaberController(cl)
+        self.home = self.stage.home()
+        print('init')
+
+    def test_one(self):
+        self.assertEqual(1, 1.0)
+
+    def test_home(self):
+        self.stage.home()
+        pos_x, pos_y = self.stage.get_position_all()
+        self.assertEqual(pos_x, self.home[0])
+        self.assertEqual(pos_y, self.home[1])
+
+    def test_move_x(self):
+        self.stage.home()
+        self.stage.move_right(1)
+        time.sleep(1)
+        self.stage.stop_x()
+        pos = self.stage.get_position_x()
+        self.assertGreater(pos, self.home[1])
+
+    def test_move_y(self):
+        self.stage.home()
+        self.stage.move_top(1)
+        time.sleep(1)
+        self.stage.stop_y()
+        pos = self.stage.get_position_y()
+        self.assertGreater(pos, self.home[1])
 
 
 async def test(self):
@@ -115,16 +158,19 @@ async def test(self):
 
 
 def main():
-    PORT_NUM = "COM3"  # check
-    z = ZaberController(PORT_NUM)
-
-    asyncio.run(test(z))
+    # PORT_NUM = "COM3"  # check
+    # z = ZaberController(PORT_NUM)
+    #
+    # asyncio.run(test(z))
 
     # loop = asyncio.get_event_loop() #こちらで実行すると次の警告が出る：DeprecationWarning: There is no current event loop
     # tasks = asyncio.gather(z.test())
     # loop.run_until_complete(tasks)
 
-    z.quit()
+    # z.quit()
+
+    ztc = ZaberTestCase()
+    ztc.run()
 
 
 if __name__ == '__main__':
