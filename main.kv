@@ -48,34 +48,34 @@
                         min: 0
                         max: 6
                         step: 1
-                        value: 1
+                        value: 0
                         on_value: 
                             root.set_freq_from_slider(self.value)
 
             #ステージ移動速さ     
             Vbox:
-                id: speed
+                id: vel
                 Hbox:
                     Label22:
-                        id: speed_text
-                        text: "Speed [μm/s]: "
+                        id: vel_text
+                        text: "Velocity [μm/s]: "
                     
                     TextInput22:
-                        id: speed_input
+                        id: vel_input
                         text: "1"
                         foreground_color: (0,0,0,1) 
                         on_text: 
-                            root.check_speed(self.text)
+                            root.check_vel(self.text)
 
                 Hbox:
                     Slider:
-                        id: speed_slider
+                        id: vel_slider
                         min: 0
                         max: 6
                         step: 1
-                        value: 1
+                        value: 0
                         on_value: 
-                            root.set_speed_from_slider(self.value)
+                            root.set_vel_from_slider(self.value)
                 
 
 

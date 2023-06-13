@@ -40,7 +40,7 @@ class MainWindow(BoxLayout):
         self.cl = ConfigLoader('./config.json')
 
         self.freq: int = 100
-        self.speed: float = 100.0
+        self.vel: float = 100.0
 
         self.laser = PulseLaserController(self.cl)
         self.stage = ZaberController(self.cl)
@@ -68,8 +68,7 @@ class MainWindow(BoxLayout):
 
     @control_auto_emission
     def move_right(self):
-        # TODO: IMPLEMENT ME
-        pass
+        self.stage.move_right(self.vel)
 
     def stop_moving(self):
         auto_on = self.ids.toggle_auto_emit.state == 'down'
@@ -103,15 +102,15 @@ class MainWindow(BoxLayout):
         freq = min(10000, freq)
         self.ids.freq_input.text = str(freq)
 
-    def check_speed(self, speed_str: str):
+    def check_vel(self, vel_str: str):
         try:
-            speed = float(speed_str)
+            vel = float(vel_str)
         except ValueError:
-            print('invalid speed input')
+            print('invalid vel input')
             return
-        speed = max(0.05, speed)
-        speed = min(10000.0, speed)
-        self.ids.speed_input.text = str(speed)
+        vel = max(0.05, vel)
+        vel = min(10000.0, vel)
+        self.ids.vel_input.text = str(vel)
 
     def set_freq_from_slider(self, value: int):
         index = int(value)
@@ -119,11 +118,11 @@ class MainWindow(BoxLayout):
         self.freq = freq_list[index]
         self.ids.freq_input.text = str(self.freq)
 
-    def set_speed_from_slider(self, value: int):
+    def set_vel_from_slider(self, value: int):
         index = int(value)
-        speed_list = [1, 5, 10, 50, 100, 500, 1000]
-        self.speed = speed_list[index]
-        self.ids.speed_input.text = str(self.speed)
+        vel_list = [1, 5, 10, 50, 100, 500, 1000]
+        self.vel = vel_list[index]
+        self.ids.vel_input.text = str(self.vel)
 
     def start_program_mode(self):
         pass
