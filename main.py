@@ -7,7 +7,6 @@ from kivy.base import ExceptionManager, ExceptionHandler
 from ConfigLoader import ConfigLoader
 from PulseLaserController import PulseLaserController
 from ZaberController import ZaberController
-# メモ：ZaberControllerクラスをインポート
 
 
 def control_auto_emission(func):
@@ -15,7 +14,7 @@ def control_auto_emission(func):
         auto_on = self.ids.toggle_auto_emit.state == 'down'
         if auto_on:
             self.emit_laser()
-        ret = func(*args, **kwargs)
+        ret = func(self, *args, **kwargs)
         return ret
     return wrapper
 

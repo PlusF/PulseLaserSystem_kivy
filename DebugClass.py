@@ -21,7 +21,7 @@ class DebugDevice:
 
     def get_position(self, unit):
         pos = 0
-        print(f'{self.name} position is  {pos} {unit}')
+        # print(f'{self.name} position is  {pos} {unit}')
         return pos
 
     def stop(self):

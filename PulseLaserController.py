@@ -1,14 +1,15 @@
 import time
 import serial
+from ConfigLoader import ConfigLoader
 from DebugClass import DebugSerial
 
 
 class PulseLaserController:
-    def __init__(self, config_loader):
-        if config_loader.mode == 'DEBUG':
+    def __init__(self, cl: ConfigLoader):
+        if cl.mode == 'DEBUG':
             self.ser = DebugSerial()
-        elif config_loader.mode == 'RELEASE':
-            self.ser = serial.Serial(port=config_loader.port_laser, baudrate=config_loader.baudrate_laser)
+        elif cl.mode == 'RELEASE':
+            self.ser = serial.Serial(port=cl.port_laser, baudrate=cl.baudrate_laser)
         time.sleep(1)
 
     def emit(self, frq: int) -> bool:
