@@ -37,16 +37,20 @@
                     
                     TextInput22:
                         id: freq_input
-                        text: str(freq_slider.value)
+                        text: "16"
+                        foreground_color: (0,0,0,1) 
                         on_text: 
-                            freq_slider.value = self.text
+                            self.text = root.check_freq(self.text)
+                    
                 Hbox:
                     Slider:
                         id: freq_slider
-                        min: 16
-                        max: 10000
+                        min: 1
+                        max: 7
                         step: 1
+                        value: 1
                         on_value: 
+                            freq_input.text = str(root.set_freq_from_slider(self.value))
 
             #ステージ移動速さ     
             Vbox:
@@ -58,16 +62,22 @@
                     
                     TextInput22:
                         id: speed_input
-                        text: str(speed_slider.value)
+                        text: "1"
+                        foreground_color: (0,0,0,1) 
                         on_text: 
-                            speed_slider.value = self.text
+                            self.text = root.check_speed(self.text)
+
                 Hbox:
                     Slider:
                         id: speed_slider
                         min: 1
-                        max: 1000
+                        max: 7
                         step: 1
+                        value:1
                         on_value: 
+                            speed_input.text = str(root.set_speed_from_slider(self.value))
+                
+
 
         #2：移動，オートか手動か
         TabbedPanel:
@@ -89,9 +99,10 @@
                             color: (1,1,1,1) if toggle_manual_emit.state == "normal" else (0.5,0.5,0.5,1)
                             #disabled: "" if toggle_manual_emit.state == "normal" else True
                             on_press: 
-                                root.check("auto")
                                 toggle_manual_emit.state = "normal"
                             on_release: 
+                                root.check("auto")
+                                
 
                         #常時ON
                         ToggleButton22:
@@ -100,9 +111,10 @@
                             color:(1,1,1,1) if toggle_auto_emit.state == "normal" else (0.5,0.5,0.5,1) 
                             #disabled: "" if toggle_auto_emit.state == "normal" else True
                             on_press: 
-                                root.check("manual")
                                 toggle_auto_emit.state = "normal"
                             on_release: 
+                                root.check("manual")
+                                
                     
                 #2.1.2：ステージ移動
                     Hbox:
@@ -112,9 +124,8 @@
                             id: left
                             MoveButton:
                                 id: left_button
-                                on_press:
-                                    root.move_left()
-                                on_release:
+                                on_press: root.move_left()
+                                on_release: root.stop_moving()
                                 MoveImage:
                                     id: left_arrow
                                     source: "source/left.png"
@@ -124,18 +135,16 @@
                             id: top_and_bottom
                             MoveButton:
                                 id: top_button
-                                on_press:
-                                    root.move_top()
-                                on_release:
+                                on_press: root.move_top()
+                                on_release: root.stop_moving()
                                 MoveImage:
                                     id: top_arrow
                                     source: "source/up.png"
                             
                             MoveButton:
                                 id: bottom_button
-                                on_press:
-                                    root.move_bottom()
-                                on_release:
+                                on_press: root.move_bottom()
+                                on_release: root.stop_moving()
                                 MoveImage:
                                     id: bottom_arrow
                                     source: "source/down.png"
@@ -145,9 +154,8 @@
                             id: right
                             MoveButton:
                                 id: right_button
-                                on_press:
-                                    root.move_right()
-                                on_release:
+                                on_press: root.move_right()
+                                on_release: root.stop_moving()
                                 MoveImage:
                                     id: right_arrow
                                     source: "source/right.png"
@@ -167,6 +175,9 @@
                             state: "down"
                             on_press: 
                                 toggle_rect.state = "normal"
+                            on_release: 
+                                root.check("line")
+
                         #矩形移動
                         ToggleButton22:
                             id: toggle_rect
@@ -175,6 +186,9 @@
                             #disabled: "" if toggle_line.state == "normal" else True
                             on_press: 
                                 toggle_line.state = "normal"
+                            on_release: 
+                                root.check("rect")
+
                     #2.2.2：移動量
                     Hbox:
                         #移動量
@@ -203,6 +217,7 @@
                                 id: program_mode_start
                                 text:"Start"
                                 on_press:
+                                    root.start_program_mode()
                                     
                     #2.2.3：図形として描画
                     Hbox:
@@ -222,39 +237,35 @@
                                 pos: (self.x+self.width/2-4, self.y+self.height/2-4)
                                 size: 8,8
                
-        #3：xy座標とソフト終了ボタン   
-        Vbox:
-            id: XY_and_quit
-            #3.1：XY座標
-            Hbox:
-                id: XY
-                Vbox:
-                    Hbox:
-                        Label22:
-                            text: "X [μm]: "
-                        Label22:
-                            id: X
-                            text: "?"
-                    
-                    Hbox:
-                        Label22:
-                            text: "Y [μm]: "
-                        Label22:
-                            id: Y
-                            text: "?"
+        #3：xy座標  
+        
+            
+        Hbox:
+            id: XY
+            size_hint_y:0.7
+            Vbox:
+                Hbox:
+                    Label22:
+                        text: "X [μm]: "
+                    Label22:
+                        id: X
+                        text: "?"
                 
-                Vbox:
-                    id: set_org
-                    Button22:
-                        text: "Set_Org"
-                        on_press: 
-                            X.text = "0"
-                            Y.text = "0"
-            #3.2：終了
-            Hbox:
-                id: quit
+                Hbox:
+                    Label22:
+                        text: "Y [μm]: "
+                    Label22:
+                        id: Y
+                        text: "?"
+            
+            Vbox:
+                id: set_org
                 Button22:
-                    text:"Quit"
+                    text: "Set_Org"
+                    on_press: 
+                        X.text = "0"
+                        Y.text = "0"
+            
                     
         
         
