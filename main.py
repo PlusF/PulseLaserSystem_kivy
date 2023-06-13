@@ -52,19 +52,15 @@ class MainWindow(BoxLayout):
 
     @control_auto_emission
     def move_top(self):
-        # TODO: IMPLEMENT ME
-        # メモ：ZaberControllerインスタンスのmove_top関数を呼び出す
-        pass
+        self.stage.move_top(self.vel)
 
     @control_auto_emission
     def move_bottom(self):
-        # TODO: IMPLEMENT ME
-        pass
+        self.stage.move_bottom(self.vel)
 
     @control_auto_emission
     def move_left(self):
-        # TODO: IMPLEMENT ME
-        pass
+        self.stage.move_left(self.vel)
 
     @control_auto_emission
     def move_right(self):
