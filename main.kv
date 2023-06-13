@@ -1,31 +1,273 @@
 #:kivy 1.0.9
+<MoveButton@Button>:
+    background_color: (166/255,166/255,166/255,1)   
+
+<MoveImage@Image>:
+    center_x: self.parent.center_x
+    center_y: self.parent.center_y
+<Vbox@BoxLayout>:
+    orientation: "vertical"
+
+<Hbox@BoxLayout>:
+    orientation: "horizontal"
+
+<Label22@Label>:
+    font_size: 22
+<TextInput22@TextInput>:
+    font_size: 22
+<ToggleButton22@ToggleButton>:
+    font_size: 22
+<Button22@Button>:
+    font_size: 22
 
 <MainWindow>:
-    BoxLayout:
-        center_x: root.width / 2
-        center_y: root.height / 2
-        orientation: "vertical"
+    #メインのウインドウ
+    Vbox:
+        id: main
+        #１：レーザー条件
+        Vbox:
+            id: condition
+            #レーザー周波数
+            Vbox:
+                id: freq
+                Hbox:
+                    Label22:
+                        id: freq_text
+                        text: "Frequancy [Hz]: "
+                    
+                    TextInput22:
+                        id: freq_input
+                        text: "16"
+                        foreground_color: (0,0,0,1) 
+                        on_text: 
+                            self.text = root.check_freq(self.text)
+                    
+                Hbox:
+                    Slider:
+                        id: freq_slider
+                        min: 1
+                        max: 7
+                        step: 1
+                        value: 1
+                        on_value: 
+                            freq_input.text = str(root.set_freq_from_slider(self.value))
 
-        Button:
-            id: button_top
-            text:
-            on_press:
-            on_release:
+            #ステージ移動速さ     
+            Vbox:
+                id: speed
+                Hbox:
+                    Label22:
+                        id: speed_text
+                        text: "Speed [μm/s]: "
+                    
+                    TextInput22:
+                        id: speed_input
+                        text: "1"
+                        foreground_color: (0,0,0,1) 
+                        on_text: 
+                            self.text = root.check_speed(self.text)
 
-        Button:
-            id: button_bottom
-            text:
-            on_press:
-            on_release:
+                Hbox:
+                    Slider:
+                        id: speed_slider
+                        min: 1
+                        max: 7
+                        step: 1
+                        value:1
+                        on_value: 
+                            speed_input.text = str(root.set_speed_from_slider(self.value))
+                
 
-        Button:
-            id: button_left
-            text:
-            on_press:
-            on_release:
 
-        Button:
-            id: button_right
-            text:
-            on_press:
-            on_release:
+        #2：移動，オートか手動か
+        TabbedPanel:
+            size_hint_y:2
+            do_default_tab: False
+            #2.1：手動で移動するモード
+            TabbedPanelItem:
+                text: "Manual Mode"
+                Vbox:
+
+                #2.1.1：レーザー，移動している時だけONか，常時ONか
+                    Hbox:
+                        id: Auto_or_Manual
+                        #移動している時だけON
+                        ToggleButton22:
+                            id: toggle_auto_emit
+                            text: "Auto"
+                            #押した時はdown,押してない時はnormal 
+                            color: (1,1,1,1) if toggle_manual_emit.state == "normal" else (0.5,0.5,0.5,1)
+                            #disabled: "" if toggle_manual_emit.state == "normal" else True
+                            on_press: 
+                                toggle_manual_emit.state = "normal"
+                            on_release: 
+                                root.check("auto")
+                                
+
+                        #常時ON
+                        ToggleButton22:
+                            id: toggle_manual_emit
+                            text:"Manual\n   Emit" 
+                            color:(1,1,1,1) if toggle_auto_emit.state == "normal" else (0.5,0.5,0.5,1) 
+                            #disabled: "" if toggle_auto_emit.state == "normal" else True
+                            on_press: 
+                                toggle_auto_emit.state = "normal"
+                            on_release: 
+                                root.check("manual")
+                                
+                    
+                #2.1.2：ステージ移動
+                    Hbox:
+                        id: move
+                        #左
+                        Vbox:
+                            id: left
+                            MoveButton:
+                                id: left_button
+                                on_press: root.move_left()
+                                on_release: root.stop_moving()
+                                MoveImage:
+                                    id: left_arrow
+                                    source: "source/left.png"
+
+                        #上下
+                        Vbox:
+                            id: top_and_bottom
+                            MoveButton:
+                                id: top_button
+                                on_press: root.move_top()
+                                on_release: root.stop_moving()
+                                MoveImage:
+                                    id: top_arrow
+                                    source: "source/up.png"
+                            
+                            MoveButton:
+                                id: bottom_button
+                                on_press: root.move_bottom()
+                                on_release: root.stop_moving()
+                                MoveImage:
+                                    id: bottom_arrow
+                                    source: "source/down.png"
+
+                        #右
+                        Vbox:
+                            id: right
+                            MoveButton:
+                                id: right_button
+                                on_press: root.move_right()
+                                on_release: root.stop_moving()
+                                MoveImage:
+                                    id: right_arrow
+                                    source: "source/right.png"
+
+            #2.2：オートで移動するモード                        
+            TabbedPanelItem:
+                text: "Program Mode"
+                Vbox:
+                    #2.2.1：直線移動か矩形移動か
+                    Hbox:
+                        #直線移動
+                        ToggleButton22:
+                            id: toggle_line
+                            text: "Line"
+                            color: (1,1,1,1) if toggle_rect.state == "normal" else (0.5,0.5,0.5,1)
+                            #disabled: "" if toggle_rect.state == "normal" else True
+                            state: "down"
+                            on_press: 
+                                toggle_rect.state = "normal"
+                            on_release: 
+                                root.check("line")
+
+                        #矩形移動
+                        ToggleButton22:
+                            id: toggle_rect
+                            text: "Rect"
+                            color: (1,1,1,1) if toggle_line.state == "normal" else (0.5,0.5,0.5,1)
+                            #disabled: "" if toggle_line.state == "normal" else True
+                            on_press: 
+                                toggle_line.state = "normal"
+                            on_release: 
+                                root.check("rect")
+
+                    #2.2.2：移動量
+                    Hbox:
+                        #移動量
+                        Vbox:
+                            size_hint_x:2
+                            Hbox:
+                                Label22:
+                                    text: "ΔX [μm]"
+                                TextInput22:
+                                    id: deltaX
+                                    text: str(root.delta_x)
+                                    on_text:
+                                        root.delta_x = int(self.text)
+                            Hbox:
+                                Label22:
+                                    text: "ΔY [μm]"
+                                TextInput22:
+                                    id: deltaY
+                                    text: str(root.delta_y)
+                                    on_text:
+                                        root.delta_y = int(self.text)
+
+                        #移動開始
+                        Vbox:
+                            Button22:
+                                id: program_mode_start
+                                text:"Start"
+                                on_press:
+                                    root.start_program_mode()
+                                    
+                    #2.2.3：図形として描画
+                    Hbox:
+                        size_hint_y:2
+                        canvas:
+                            Line:
+                                id: laser_line
+                                points:(self.x+self.width/2, self.y+self.height/2, self.x+self.width/2+root.delta_x , self.y+self.height/2+root.delta_y) if toggle_line.state == "down" else (0,0)
+                                width:1
+                            
+                            Line:
+                                id: laser_rect
+                                points:(self.x+self.width/2, self.y+self.height/2, self.x+self.width/2+root.delta_x, self.y+self.height/2, self.x+self.width/2+root.delta_x, self.y+self.height/2+root.delta_y, self.x+self.width/2, self.y+self.height/2+root.delta_y, self.x+self.width/2, self.y+self.height/2) if toggle_rect.state == "down" else (0,0)
+                                width:1
+
+                            Ellipse:
+                                pos: (self.x+self.width/2-4, self.y+self.height/2-4)
+                                size: 8,8
+               
+        #3：xy座標  
+        
+            
+        Hbox:
+            id: XY
+            size_hint_y:0.7
+            Vbox:
+                Hbox:
+                    Label22:
+                        text: "X [μm]: "
+                    Label22:
+                        id: X
+                        text: "?"
+                
+                Hbox:
+                    Label22:
+                        text: "Y [μm]: "
+                    Label22:
+                        id: Y
+                        text: "?"
+            
+            Vbox:
+                id: set_org
+                Button22:
+                    text: "Set_Org"
+                    on_press: 
+                        X.text = "0"
+                        Y.text = "0"
+            
+                    
+        
+        
+
+            
