@@ -1,7 +1,8 @@
 import serial
 from kivy.app import App
 from kivy.uix.widget import Widget
-
+from kivy.uix.boxlayout import BoxLayout
+from kivy.base import ExceptionManager, ExceptionHandler
 from kivy.core.window import Window, Clock
 from kivy.properties import NumericProperty
 from ConfigLoader import ConfigLoader
@@ -19,18 +20,6 @@ def control_auto_emission(func):
     return wrapper
 
 
-class MainWindow(Widget):
-    pos_x = NumericProperty(0, force_dispatch=True)
-    pos_y = NumericProperty(0, force_dispatch=True)
-
-from kivy.uix.boxlayout import BoxLayout
-from kivy.core.window import Window
-from kivy.properties import NumericProperty
-from kivy.base import ExceptionManager, ExceptionHandler
-import math
-# メモ：ZaberControllerクラスをインポート
-
-
 
 class CrashHandler(ExceptionHandler):
     def handle_exception(self, inst):
@@ -40,6 +29,8 @@ class CrashHandler(ExceptionHandler):
 class MainWindow(BoxLayout):
     delta_x = NumericProperty(100)
     delta_y = NumericProperty(50)
+    pos_x = NumericProperty(0, force_dispatch=True)
+    pos_y = NumericProperty(0, force_dispatch=True)
     Window.size = (350, 700)
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -78,7 +69,6 @@ class MainWindow(BoxLayout):
     def move_right(self):
         # TODO: IMPLEMENT ME
         pass
-
 
     def stop_moving(self):
         auto_on = self.ids.toggle_auto_emit.state == 'down'
@@ -126,6 +116,7 @@ class MainWindow(BoxLayout):
 
     def quit(self):
         self.ser_laser.close()
+
     def check(self,text):
         print(text)
 
@@ -186,10 +177,7 @@ class MainWindow(BoxLayout):
     def start_program_mode(self):
         pass
 
-
     ExceptionManager.add_handler(CrashHandler())
-
-
 
 
 
@@ -197,9 +185,6 @@ class MainApp(App):
     def build(self):
         window = MainWindow()
         return window
-
-
-
 
 
 if __name__ == '__main__':
