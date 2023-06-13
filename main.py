@@ -101,7 +101,7 @@ class MainWindow(BoxLayout):
             return
         freq = max(16, freq)
         freq = min(10000, freq)
-        self.ids.freq_input.text = freq
+        self.ids.freq_input.text = str(freq)
 
     def check_speed(self, speed_str: str):
         try:
@@ -111,17 +111,19 @@ class MainWindow(BoxLayout):
             return
         speed = max(0.05, speed)
         speed = min(10000.0, speed)
-        self.ids.speed_input.text = speed
+        self.ids.speed_input.text = str(speed)
 
     def set_freq_from_slider(self, value: int):
+        index = int(value)
         freq_list = [16, 50, 100, 500, 1000, 5000, 10000]
-        self.freq = freq_list[value]
-        self.ids.freq_input.text = self.freq
+        self.freq = freq_list[index]
+        self.ids.freq_input.text = str(self.freq)
 
     def set_speed_from_slider(self, value: int):
+        index = int(value)
         speed_list = [1, 5, 10, 50, 100, 500, 1000]
-        self.speed = speed_list[value]
-        self.ids.speed_input.text = self.speed
+        self.speed = speed_list[index]
+        self.ids.speed_input.text = str(self.speed)
 
     def start_program_mode(self):
         pass
