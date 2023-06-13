@@ -100,6 +100,7 @@
                             #disabled: "" if toggle_manual_emit.state == "normal" else True
                             on_press: 
                                 toggle_manual_emit.state = "normal"
+                                root.stop_laser()
                                 
 
                         #常時ON
@@ -246,25 +247,11 @@
                         text: "X [μm]: "
                     Label22:
                         id: X
-                        text: "?"
+                        text: str(root.pos_x)
                 
                 Hbox:
                     Label22:
                         text: "Y [μm]: "
                     Label22:
                         id: Y
-                        text: "?"
-            
-            Vbox:
-                id: set_org
-                Button22:
-                    text: "Set_Org"
-                    on_press: 
-                        X.text = "0"
-                        Y.text = "0"
-            
-                    
-        
-        
-
-            
+                        text: str(root.pos_y)

@@ -12,17 +12,18 @@ class DebugConnection:
 class DebugDevice:
     def __init__(self, name: str):
         self.name = name
+        self.pos = 0
 
     def move_velocity(self, vel: float, unit):
         print(f'{self.name} moving by velocity {vel} {unit}')
+        self.pos += vel
 
     async def move_absolute_async(self, pos: float, unit):
         print(f'{self.name} moving to absolute {pos} {unit}')
 
     def get_position(self, unit):
-        pos = 0
-        # print(f'{self.name} position is  {pos} {unit}')
-        return pos
+        # print(f'{self.name} position is  {self.pos} {unit}')
+        return self.pos
 
     def stop(self):
         print(f'{self.name} stop')

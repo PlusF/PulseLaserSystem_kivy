@@ -72,6 +72,8 @@ class MainWindow(BoxLayout):
 
     def emit_laser(self):
         ok = self.laser.emit(self.freq)
+        if not ok:
+            print('invalid frequency')
 
     def stop_laser(self):
         self.laser.stop()
