@@ -1,13 +1,12 @@
 #:kivy 1.0.9
 <MoveButton@Button>:
-    background_color: (166/255,166/255,166/255,1)   
-
+    background_color: (166/255,166/255,166/255,1)
 <MoveImage@Image>:
     center_x: self.parent.center_x
     center_y: self.parent.center_y
+
 <Vbox@BoxLayout>:
     orientation: "vertical"
-
 <Hbox@BoxLayout>:
     orientation: "horizontal"
 
@@ -21,150 +20,63 @@
     font_size: 22
 
 <MainWindow>:
-    #メインのウインドウ
+    # メインのウインドウ
     Vbox:
-        id: main
-        #１：レーザー条件
-        Vbox:
-            id: condition
-            #レーザー周波数
-            Vbox:
-                id: freq
-                Hbox:
-                    Label22:
-                        id: freq_text
-                        text: "Frequency [Hz]: "
-                    
-                    TextInput22:
-                        id: freq_input
-                        text: "16"
-                        foreground_color: (0,0,0,1) 
-                        on_text: 
-                            root.check_freq(self.text)
-                    
-                Hbox:
-                    Slider:
-                        id: freq_slider
-                        min: 0
-                        max: 6
-                        step: 1
-                        value: 0
-                        on_value: 
-                            root.set_freq_from_slider(self.value)
-
-            #ステージ移動速さ     
-            Vbox:
-                id: vel
-                Hbox:
-                    Label22:
-                        id: vel_text
-                        text: "Velocity [μm/s]: "
-                    
-                    TextInput22:
-                        id: vel_input
-                        text: "1.0"
-                        foreground_color: (0,0,0,1) 
-                        on_text: 
-                            root.check_vel(self.text)
-
-                Hbox:
-                    Slider:
-                        id: vel_slider
-                        min: 0
-                        max: 6
-                        step: 1
-                        value: 0
-                        on_value: 
-                            root.set_vel_from_slider(self.value)
-                
-
-
-        #2：移動，オートか手動か
+        # 1： 移動，オートか手動か
         TabbedPanel:
-            size_hint_y:2
+            size_hint_y: 2
             do_default_tab: False
-            #2.1：手動で移動するモード
+            tab_width: self.parent.width / 2.03
+            # 1.1：手動で移動するモード
             TabbedPanelItem:
                 text: "Manual Mode"
-                Vbox:
+                # 十字キー
+                GridLayout:
+                    rows: 3
+                    cols: 3
+                    Button:
+                        disabled: True
+                    MoveButton:
+                        id: move_top
+                        on_press: root.move('y', '+')
+                        on_release: root.stop_moving('y', '+')
+                        MoveImage:
+                            source: "source/up.png"
+                    Button:
+                        disabled: True
+                    MoveButton:
+                        id: move_left
+                        on_press: root.move('x', '-')
+                        on_release: root.stop_moving('x', '-')
+                        MoveImage:
+                            source: "source/left.png"
+                    Button:
+                        disabled: True
+                        background_color: (0, 0, 0, 1)
+                    MoveButton:
+                        id: move_right
+                        on_press: root.move('x', '+')
+                        on_release: root.stop_moving('x', '+')
+                        MoveImage:
+                            source: "source/right.png"
+                    Button:
+                        disabled: True
+                    MoveButton:
+                        id: move_bottom
+                        on_press: root.move('y', '-')
+                        on_release: root.stop_moving('y', '-')
+                        MoveImage:
+                            source: "source/down.png"
+                    Button:
+                        disabled: True
 
-                #2.1.1：レーザー，移動している時だけONか，常時ONか
-                    Hbox:
-                        id: Auto_or_Manual
-                        #移動している時だけON
-                        ToggleButton22:
-                            id: toggle_auto_emit
-                            text: "Auto"
-                            #押した時はdown,押してない時はnormal 
-                            color: (1,1,1,1) if toggle_manual_emit.state == "normal" else (0.5,0.5,0.5,1)
-                            disabled: True
-                            on_press: 
-                                toggle_manual_emit.state = "normal"
-                                root.stop_laser()
-                                
-
-                        #常時ON
-                        ToggleButton22:
-                            id: toggle_manual_emit
-                            text:"Manual\n   Emit" 
-                            color:(1,1,1,1) if toggle_auto_emit.state == "normal" else (0.5,0.5,0.5,1) 
-                            disabled: True
-                            on_press: 
-                                toggle_auto_emit.state = "normal"
-                                root.handle_laser()
-                                
-                    
-                #2.1.2：ステージ移動
-                    Hbox:
-                        id: move
-                        #左
-                        Vbox:
-                            id: left
-                            MoveButton:
-                                id: left_button
-                                on_press: root.move('x', '-')
-                                on_release: root.stop_moving()
-                                MoveImage:
-                                    id: left_arrow
-                                    source: "source/left.png"
-
-                        #上下
-                        Vbox:
-                            id: top_and_bottom
-                            MoveButton:
-                                id: top_button
-                                on_press: root.move('y', '+')
-                                on_release: root.stop_moving()
-                                MoveImage:
-                                    id: top_arrow
-                                    source: "source/up.png"
-                            
-                            MoveButton:
-                                id: bottom_button
-                                on_press: root.move('y', '-')
-                                on_release: root.stop_moving()
-                                MoveImage:
-                                    id: bottom_arrow
-                                    source: "source/down.png"
-
-                        #右
-                        Vbox:
-                            id: right
-                            MoveButton:
-                                id: right_button
-                                on_press: root.move('x', '+')
-                                on_release: root.stop_moving()
-                                MoveImage:
-                                    id: right_arrow
-                                    source: "source/right.png"
-
-            #2.2：オートで移動するモード                        
+            # 1.2： オートで移動するモード
             TabbedPanelItem:
                 text: "Program Mode"
                 Vbox:
-                    #2.2.1：直線移動か矩形移動か
+                    # 1.2.1： 直線移動か矩形移動か
                     Hbox:
-                        #直線移動
+                        # 直線移動
                         ToggleButton22:
                             id: toggle_line
                             text: "Line"
@@ -174,7 +86,7 @@
                             on_press: 
                                 toggle_rect.state = "normal"
 
-                        #矩形移動
+                        # 矩形移動
                         ToggleButton22:
                             id: toggle_rect
                             text: "Rect"
@@ -183,9 +95,9 @@
                             on_press: 
                                 toggle_line.state = "normal"
 
-                    #2.2.2：移動量
+                    # 1.2.2： 移動量
                     Hbox:
-                        #移動量
+                        # 移動量
                         Vbox:
                             size_hint_x:2
                             Hbox:
@@ -205,7 +117,7 @@
                                     on_text:
                                         root.delta_y = int(self.text)
 
-                        #移動開始
+                        # 移動開始
                         Vbox:
                             Button22:
                                 id: program_mode_start
@@ -213,7 +125,7 @@
                                 on_press:
                                     root.start_program_mode()
                                     
-                    #2.2.3：図形として描画
+                    # 1.2.3： 図形として描画
                     Hbox:
                         size_hint_y:2
                         canvas:
@@ -230,13 +142,32 @@
                             Ellipse:
                                 pos: (self.x+self.width/2-4, self.y+self.height/2-4)
                                 size: 8,8
-               
-        #3：xy座標  
-        
-            
+
+        # 2： 移動速度
+        Vbox:
+            size_hint_y: 0.5
+            Vbox:
+                Hbox:
+                    Label22:
+                        id: vel_text
+                        text: "Velocity [μm/s]: "
+
+                    TextInput22:
+                        id: vel_input
+                        text: "1.0"
+                        on_text:　root.check_vel(self.text)
+
+                Hbox:
+                    Slider:
+                        id: vel_slider
+                        min: 0
+                        max: 6
+                        step: 1
+                        value: 0
+                        on_value: root.set_vel_from_slider(self.value)
+        # 3： xy座標
         Hbox:
-            id: XY
-            size_hint_y:0.7
+            size_hint_y: 0.5
             Vbox:
                 Hbox:
                     Label22:
@@ -251,3 +182,62 @@
                     Label22:
                         id: Y
                         text: str(root.pos_y)
+        Widget:
+            id: separator
+            size_hint_y: 0.2
+            padding: [0, 2, 0, 2]
+            canvas:
+                Color:
+                    rgb: 0.3, 0.3, 0.3
+                Rectangle:
+                    pos: 0, separator.center_y
+                    size: separator.width, 5
+
+        # 4: レーザー周波数
+        Vbox:
+            # 4.1: レーザー周波数
+            Vbox:
+                size_hint_y: 1
+                Hbox:
+                    Label22:
+                        id: freq_text
+                        text: "Frequency [Hz]: "
+
+                    TextInput22:
+                        id: freq_input
+                        text: "16"
+                        foreground_color: (0,0,0,1)
+                        on_text:
+                            root.check_freq(self.text)
+                Hbox:
+                    Slider:
+                        id: freq_slider
+                        min: 0
+                        max: 6
+                        step: 1
+                        value: 0
+                        on_value:
+                            root.set_freq_from_slider(self.value)
+
+            # 4.2: レーザー，移動している時だけONか，常時ONか
+            Hbox:
+                # 移動している時だけON
+                ToggleButton22:
+                    id: toggle_auto_emit
+                    text: "Auto"
+                    #押した時はdown,押してない時はnormal
+                    color: (1,1,1,1) if toggle_manual_emit.state == "normal" else (0.5,0.5,0.5,1)
+                    disabled: True
+                    on_press:
+                        toggle_manual_emit.state = "normal"
+                        root.stop_laser()
+
+                # 常時ON
+                ToggleButton22:
+                    id: toggle_manual_emit
+                    text:"Emit / Stop"
+                    color:(1,1,1,1) if toggle_auto_emit.state == "normal" else (0.5,0.5,0.5,1)
+                    disabled: True
+                    on_press:
+                        toggle_auto_emit.state = "normal"
+                        root.handle_laser()

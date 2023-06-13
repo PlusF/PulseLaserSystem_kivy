@@ -48,7 +48,7 @@ class DebugSerial:
         pass
 
     def write(self, msg):
-        print(f'serial write:\n\t{msg}')
+        print(f'serial write: {msg}')
 
     def close(self):
         print('close serial')

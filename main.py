@@ -46,12 +46,82 @@ class MainWindow(BoxLayout):
                 '-': self.stage.move_bottom
             }
         }
+        # キーボード入力も受け付けるために必要
+        self.is_moving = {
+            'x': {
+                '+': False,
+                '-': False,
+            },
+            'y': {
+                '+': False,
+                '-': False,
+            }
+        }
+        # キーボード入力も受け付けるために必要
+        self.move_widgets = {
+            'x': {
+                '+': self.ids.move_right,
+                '-': self.ids.move_left,
+            },
+            'y': {
+                '+': self.ids.move_top,
+                '-': self.ids.move_bottom,
+            }
+        }
 
         def enable_laser(dt):  # Arduinoの接続待ち（1秒もかかりはしないが念のため)
             self.ids.toggle_auto_emit.disabled = False
             self.ids.toggle_manual_emit.disabled = False
         Clock.schedule_once(enable_laser, 1)
         Clock.schedule_interval(self.update_position, self.cl.dt_sec)
+
+        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+        self._keyboard.bind(on_key_up=self._on_keyboard_up)
+
+    def _keyboard_closed(self):
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        self._keyboard = None
+
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        key = keycode[1]
+        if key in ['a', 'left']:
+            axis = 'x'
+            direction = '-'
+        elif key in ['w', 'up']:
+            axis = 'y'
+            direction = '+'
+        elif key in ['d', 'right']:
+            axis = 'x'
+            direction = '+'
+        elif key in ['s', 'down']:
+            axis = 'y'
+            direction = '-'
+        else:
+            return
+        if self.is_moving[axis][direction]:  # 押し続けると複数回の入力が来るので，不要な場合はスルー
+            return
+        self.move(axis, direction)
+        self.move_widgets[axis][direction].state = 'down'
+
+    def _on_keyboard_up(self, keyboard, keycode):
+        key = keycode[1]
+        if key in ['a', 'left']:
+            axis = 'x'
+            direction = '-'
+        elif key in ['w', 'up']:
+            axis = 'y'
+            direction = '+'
+        elif key in ['d', 'right']:
+            axis = 'x'
+            direction = '+'
+        elif key in ['s', 'down']:
+            axis = 'y'
+            direction = '-'
+        else:
+            return
+        self.stop_moving(axis, direction)
+        self.move_widgets[axis][direction].state = 'normal'
 
     def update_position(self, dt):
         # 位置情報の更新．Clockによって定期実行される．定期実行のスパンはConfigによって定められている．
@@ -60,19 +130,34 @@ class MainWindow(BoxLayout):
     def move(self, axis: str, direction: str):
         # 上下左右の移動をつかさどる関数．コードの反復を避けるために統一させた．
         auto_on = self.ids.toggle_auto_emit.state == 'down'
+        # すでに動いている軸があるか確認
+        all_stage_stopped = not any([self.is_moving[a][d] for d in ['+', '-'] for a in ['x', 'y']])
         move_func = self.move_funcs[axis][direction]
 
-        # Auto emissionがONであればレーザー照射
-        if auto_on:
+        # Auto emissionがONかつまだ照射されていなければレーザー照射
+        if auto_on and all_stage_stopped:
             self.emit_laser()
         move_func(self.vel)
 
-    def stop_moving(self):
-        # Auto emissionがONであればレーザー停止
+        self.is_moving[axis][direction] = True
+
+    def stop_moving(self, axis, direction):
+        self.is_moving[axis][direction] = False
+        # 反対方向のキーを両方押してしまっている場合は，片方離したところで止めない
+        still_moving = any(self.is_moving[axis].values())
+        if still_moving:
+            return
+
+        if axis == 'x':
+            self.stage.stop_x()
+        elif axis == 'y':
+            self.stage.stop_y()
+
+        # Auto emissionがONかつステージがすべて停止していればレーザー停止
         auto_on = self.ids.toggle_auto_emit.state == 'down'
-        if auto_on:
+        all_stage_stopped = not any([self.is_moving[a][d] for d in ['+', '-'] for a in ['x', 'y']])
+        if auto_on and all_stage_stopped:
             self.stop_laser()
-        self.stage.stop_all()
 
     def emit_laser(self):
         # 周波数に問題ないかはLaserクラス内でもチェックされる
