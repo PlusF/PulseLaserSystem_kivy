@@ -44,7 +44,7 @@ class MainWindow(BoxLayout):
             }
         }
 
-        Clock.schedule_interval(self.update_position, 0.1)  # 0.1秒ごとに位置を更新．
+        Clock.schedule_interval(self.update_position, self.cl.dt_sec)  # 0.1秒ごとに位置を更新．
 
     def update_position(self, dt):
         self.pos_x, self.pos_y = self.stage.get_position_all()
