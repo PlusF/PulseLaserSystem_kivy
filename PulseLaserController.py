@@ -6,6 +6,7 @@ from DebugClass import DebugSerial
 
 class PulseLaserController:
     def __init__(self, cl: ConfigLoader):
+        # DEBUGモードの場合は形だけのクラスを使う
         if cl.mode == 'DEBUG':
             self.ser = DebugSerial()
         elif cl.mode == 'RELEASE':
@@ -21,6 +22,7 @@ class PulseLaserController:
             return False
 
     def stop(self):
+        # -1を送るとstopする仕様（金田が策定）
         self.ser.write('-1\n'.encode())
 
     def quit(self):
