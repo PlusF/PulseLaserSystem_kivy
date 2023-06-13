@@ -1,10 +1,12 @@
-import serial
 from kivy.app import App
-from kivy.uix.widget import Widget
-from kivy.core.window import Window, Clock
+from kivy.core.window import Clock
+from kivy.uix.boxlayout import BoxLayout
+from kivy.core.window import Window
 from kivy.properties import NumericProperty
+from kivy.base import ExceptionManager, ExceptionHandler
 from ConfigLoader import ConfigLoader
 from PulseLaserController import PulseLaserController
+from ZaberController import ZaberController
 # メモ：ZaberControllerクラスをインポート
 
 
@@ -18,9 +20,18 @@ def control_auto_emission(func):
     return wrapper
 
 
-class MainWindow(Widget):
-    pos_x = NumericProperty(0, force_dispatch=True)
-    pos_y = NumericProperty(0, force_dispatch=True)
+class CrashHandler(ExceptionHandler):
+    def handle_exception(self, inst):
+        print(inst)
+        return ExceptionManager.PASS
+
+
+class MainWindow(BoxLayout):
+    pos_x = NumericProperty(0)
+    pos_y = NumericProperty(0)
+    delta_x = NumericProperty(100)
+    delta_y = NumericProperty(50)
+    Window.size = (350, 700)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -30,14 +41,14 @@ class MainWindow(Widget):
 
         self.freq: int = 100
         self.speed: float = 100.0
-        self.ser_laser = serial.Serial(port=self.cl.port_laser, baudrate=self.cl.baudrate_laser)
-        self.laser = PulseLaserController(self.ser_laser)
-        # メモ：ZaberControllerクラスのインスタンスを作成
-        self.stage = None
+
+        self.laser = PulseLaserController(self.cl)
+        self.stage = ZaberController(self.cl)
+
         Clock.schedule_interval(self.update_position, 0.1)  # 0.1秒ごとに位置を更新．
 
-    def update_position(self):
-        self.pos_x, self.pos_y = self.stage.get_position()
+    def update_position(self, dt):
+        self.pos_x, self.pos_y = self.stage.get_position_all()
 
     @control_auto_emission
     def move_top(self):
@@ -75,37 +86,49 @@ class MainWindow(Widget):
     def stop_laser(self):
         self.laser.stop()
 
-    def set_freq(self, freq: str):
+    def handle_laser(self):
+        to_emit = self.ids.toggle_manual_emit.state == 'down'
+        if to_emit:
+            self.emit_laser()
+        else:
+            self.stop_laser()
+
+    def check_freq(self, freq_str):
         try:
-            freq_int = int(freq)
+            freq = int(freq_str)
         except ValueError:
-            print('invalid frequency value: ', freq)
+            print('invalid freq input')
             return
+        freq = max(16, freq)
+        freq = min(10000, freq)
+        self.ids.freq_input.text = freq
 
-        if freq_int < 16:
-            freq_int = 16
-        elif freq_int > 10000:
-            freq_int = 10000
-
-        self.freq = freq_int
-
-    def set_speed(self, speed: str):
+    def check_speed(self, speed_str: str):
         try:
-            speed_float = int(speed)
+            speed = float(speed_str)
         except ValueError:
-            print('invalid speed value: ', speed)
+            print('invalid speed input')
             return
+        speed = max(0.05, speed)
+        speed = min(10000.0, speed)
+        self.ids.speed_input.text = speed
 
-        # TODO: ステージの最低，最高速度を確認
-        if speed_float < 0.05:
-            speed_float = 0.05
-        elif speed_float > 10000:
-            speed_float = 10000
+    def set_freq_from_slider(self, value: int):
+        freq_list = [16, 50, 100, 500, 1000, 5000, 10000]
+        self.freq = freq_list[value]
+        self.ids.freq_input.text = self.freq
 
-        self.speed = speed_float
+    def set_speed_from_slider(self, value: int):
+        speed_list = [1, 5, 10, 50, 100, 500, 1000]
+        self.speed = speed_list[value]
+        self.ids.speed_input.text = self.speed
 
-    def quit(self):
-        self.ser_laser.close()
+    def start_program_mode(self):
+        pass
+
+    def quit(self, obj):
+        self.laser.quit()
+        self.stage.quit()
 
 
 class MainApp(App):
@@ -115,4 +138,6 @@ class MainApp(App):
 
 
 if __name__ == '__main__':
+    ExceptionManager.add_handler(CrashHandler())
     MainApp().run()
+
