@@ -1,15 +1,12 @@
-import serial
 from kivy.app import App
-from kivy.uix.widget import Widget
-from kivy.core.window import Window, Clock
-from kivy.properties import NumericProperty
+from kivy.core.window import Clock
 from kivy.uix.boxlayout import BoxLayout
 from kivy.core.window import Window
 from kivy.properties import NumericProperty
 from kivy.base import ExceptionManager, ExceptionHandler
-import math
 from ConfigLoader import ConfigLoader
 from PulseLaserController import PulseLaserController
+from ZaberController import ZaberController
 # メモ：ZaberControllerクラスをインポート
 
 
@@ -44,14 +41,14 @@ class MainWindow(BoxLayout):
 
         self.freq: int = 100
         self.speed: float = 100.0
-        self.ser_laser = serial.Serial(port=self.cl.port_laser, baudrate=self.cl.baudrate_laser)
-        self.laser = PulseLaserController(self.ser_laser)
-        # メモ：ZaberControllerクラスのインスタンスを作成
-        self.stage = None
+
+        self.laser = PulseLaserController(self.cl)
+        self.stage = ZaberController(self.cl)
+
         Clock.schedule_interval(self.update_position, 0.1)  # 0.1秒ごとに位置を更新．
 
-    def update_position(self):
-        self.pos_x, self.pos_y = self.stage.get_position()
+    def update_position(self, dt):
+        self.pos_x, self.pos_y = self.stage.get_position_all()
 
     @control_auto_emission
     def move_top(self):
@@ -89,104 +86,49 @@ class MainWindow(BoxLayout):
     def stop_laser(self):
         self.laser.stop()
 
-    def set_freq(self, freq: str):
+    def handle_laser(self):
+        to_emit = self.ids.toggle_manual_emit.state == 'down'
+        if to_emit:
+            self.emit_laser()
+        else:
+            self.stop_laser()
+
+    def check_freq(self, freq_str):
         try:
-            freq_int = int(freq)
+            freq = int(freq_str)
         except ValueError:
-            print('invalid frequency value: ', freq)
+            print('invalid freq input')
             return
+        freq = max(16, freq)
+        freq = min(10000, freq)
+        self.ids.freq_input.text = freq
 
-        if freq_int < 16:
-            freq_int = 16
-        elif freq_int > 10000:
-            freq_int = 10000
-
-        self.freq = freq_int
-
-    def set_speed(self, speed: str):
+    def check_speed(self, speed_str: str):
         try:
-            speed_float = int(speed)
+            speed = float(speed_str)
         except ValueError:
-            print('invalid speed value: ', speed)
+            print('invalid speed input')
             return
+        speed = max(0.05, speed)
+        speed = min(10000.0, speed)
+        self.ids.speed_input.text = speed
 
-        # TODO: ステージの最低，最高速度を確認
-        if speed_float < 0.05:
-            speed_float = 0.05
-        elif speed_float > 10000:
-            speed_float = 10000
+    def set_freq_from_slider(self, value: int):
+        freq_list = [16, 50, 100, 500, 1000, 5000, 10000]
+        self.freq = freq_list[value]
+        self.ids.freq_input.text = self.freq
 
-        self.speed = speed_float
-
-    def quit(self):
-        self.ser_laser.close()
-
-    def check(self,text):
-        print(text)
-
-    def check_freq(self,text):
-        num = int(text)
-        if num < 16 :
-            num = 16
-        elif num > 10000:
-            num = 10000
-
-        return str(num)
-
-    def check_speed(self,text):
-        num = int(text)
-        if num < 1:
-            num = 1
-        elif num > 1000:
-            num = 1000
-
-        return str(num)
-
-    def set_freq_from_slider(self,value):
-        freq = 0
-        if value==1:
-            freq = 16
-        elif value==2:
-            freq = 50
-        elif value==3:
-            freq = 100
-        elif value==4:
-            freq = 500
-        elif value==5:
-            freq = 1000
-        elif value==6:
-            freq = 5000
-        elif value==7:
-            freq = 10000
-        return freq
-
-    def set_speed_from_slider(self, value):
-        speed = 0
-        if value==1:
-            speed = 1
-        elif value==2:
-            speed = 5
-        elif value==3:
-            speed = 10
-        elif value==4:
-            speed = 50
-        elif value==5:
-            speed = 100
-        elif value==6:
-            speed = 500
-        elif value==7:
-            speed = 1000
-        return speed
+    def set_speed_from_slider(self, value: int):
+        speed_list = [1, 5, 10, 50, 100, 500, 1000]
+        self.speed = speed_list[value]
+        self.ids.speed_input.text = self.speed
 
     def start_program_mode(self):
         pass
 
-
-    ExceptionManager.add_handler(CrashHandler())
-
-
-
-
+    def quit(self, obj):
+        self.laser.quit()
+        self.stage.quit()
 
 
 class MainApp(App):
@@ -195,9 +137,7 @@ class MainApp(App):
         return window
 
 
-
-
-
 if __name__ == '__main__':
+    ExceptionManager.add_handler(CrashHandler())
     MainApp().run()
 

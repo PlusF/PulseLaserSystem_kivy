@@ -33,24 +33,24 @@
                 Hbox:
                     Label22:
                         id: freq_text
-                        text: "Frequancy [Hz]: "
+                        text: "Frequency [Hz]: "
                     
                     TextInput22:
                         id: freq_input
                         text: "16"
                         foreground_color: (0,0,0,1) 
                         on_text: 
-                            self.text = root.check_freq(self.text)
+                            root.check_freq(self.text)
                     
                 Hbox:
                     Slider:
                         id: freq_slider
-                        min: 1
-                        max: 7
+                        min: 0
+                        max: 6
                         step: 1
                         value: 1
                         on_value: 
-                            freq_input.text = str(root.set_freq_from_slider(self.value))
+                            root.set_freq_from_slider(self.value)
 
             #ステージ移動速さ     
             Vbox:
@@ -65,17 +65,17 @@
                         text: "1"
                         foreground_color: (0,0,0,1) 
                         on_text: 
-                            self.text = root.check_speed(self.text)
+                            root.check_speed(self.text)
 
                 Hbox:
                     Slider:
                         id: speed_slider
-                        min: 1
-                        max: 7
+                        min: 0
+                        max: 6
                         step: 1
-                        value:1
+                        value: 1
                         on_value: 
-                            speed_input.text = str(root.set_speed_from_slider(self.value))
+                            root.set_speed_from_slider(self.value)
                 
 
 
@@ -100,8 +100,6 @@
                             #disabled: "" if toggle_manual_emit.state == "normal" else True
                             on_press: 
                                 toggle_manual_emit.state = "normal"
-                            on_release: 
-                                root.check("auto")
                                 
 
                         #常時ON
@@ -112,8 +110,7 @@
                             #disabled: "" if toggle_auto_emit.state == "normal" else True
                             on_press: 
                                 toggle_auto_emit.state = "normal"
-                            on_release: 
-                                root.check("manual")
+                                root.handle_laser()
                                 
                     
                 #2.1.2：ステージ移動

@@ -1,15 +1,14 @@
 import time
 import serial
+from DebugClass import DebugSerial
 
 
 class PulseLaserController:
-    def __init__(self, ser: serial.Serial):
-        """
-        initialization
-        :param ser: opened port for communication
-        :type ser: serial.Serial
-        """
-        self.ser = ser
+    def __init__(self, config_loader):
+        if config_loader.mode == 'DEBUG':
+            self.ser = DebugSerial()
+        elif config_loader.mode == 'RELEASE':
+            self.ser = serial.Serial(port=config_loader.port_laser, baudrate=config_loader.baudrate_laser)
         time.sleep(1)
 
     def emit(self, frq: int) -> bool:
@@ -22,3 +21,6 @@ class PulseLaserController:
 
     def stop(self):
         self.ser.write('-1\n'.encode())
+
+    def quit(self):
+        self.ser.close()

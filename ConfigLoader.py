@@ -7,7 +7,7 @@ class ConfigLoader:
             config = json.load(f)
         self.mode = config['mode']
         self.dt_sec = int(1 / config['FPS'])
-        self.port_stage = f'COM{config["PORT-stage"]}'
-        self.port_laser = f'COM{config["PORT-laser"]}'
+        self.port_stage = f'{config["PORT-stage"]}'
+        self.port_laser = f'{config["PORT-laser"]}'
         self.baudrate_stage = config["BAUDRATE-stage"]
         self.baudrate_laser = config["BAUDRATE-laser"]
