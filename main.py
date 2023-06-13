@@ -1,9 +1,8 @@
 from kivy.app import App
-from kivy.core.window import Clock
-from kivy.uix.boxlayout import BoxLayout
-from kivy.core.window import Window
-from kivy.properties import NumericProperty
 from kivy.base import ExceptionManager, ExceptionHandler
+from kivy.core.window import Clock, Window
+from kivy.properties import NumericProperty
+from kivy.uix.boxlayout import BoxLayout
 from ConfigLoader import ConfigLoader
 from PulseLaserController import PulseLaserController
 from ZaberController import ZaberController
@@ -38,8 +37,8 @@ class MainWindow(BoxLayout):
 
         self.cl = ConfigLoader('./config.json')
 
-        self.freq: int = 100
-        self.vel: float = 100.0
+        self.freq: int = 16
+        self.vel: float = 1.0
 
         self.laser = PulseLaserController(self.cl)
         self.stage = ZaberController(self.cl)
@@ -69,13 +68,10 @@ class MainWindow(BoxLayout):
         auto_on = self.ids.toggle_auto_emit.state == 'down'
         if auto_on:
             self.stop_laser()
-        # TODO: stop()
+        self.stage.stop_all()
 
     def emit_laser(self):
         ok = self.laser.emit(self.freq)
-        if not ok:
-            # TODO: 警告を表示する
-            pass
 
     def stop_laser(self):
         self.laser.stop()
