@@ -47,6 +47,10 @@ class MainWindow(BoxLayout):
             }
         }
 
+        def enable_laser(dt):  # Arduinoの接続待ち（1秒もかかりはしないが念のため)
+            self.ids.toggle_auto_emit.disabled = False
+            self.ids.toggle_manual_emit.disabled = False
+        Clock.schedule_once(enable_laser, 1)
         Clock.schedule_interval(self.update_position, self.cl.dt_sec)
 
     def update_position(self, dt):

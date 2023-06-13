@@ -62,7 +62,7 @@
                     
                     TextInput22:
                         id: vel_input
-                        text: "1"
+                        text: "1.0"
                         foreground_color: (0,0,0,1) 
                         on_text: 
                             root.check_vel(self.text)
@@ -97,7 +97,7 @@
                             text: "Auto"
                             #押した時はdown,押してない時はnormal 
                             color: (1,1,1,1) if toggle_manual_emit.state == "normal" else (0.5,0.5,0.5,1)
-                            #disabled: "" if toggle_manual_emit.state == "normal" else True
+                            disabled: True
                             on_press: 
                                 toggle_manual_emit.state = "normal"
                                 root.stop_laser()
@@ -108,7 +108,7 @@
                             id: toggle_manual_emit
                             text:"Manual\n   Emit" 
                             color:(1,1,1,1) if toggle_auto_emit.state == "normal" else (0.5,0.5,0.5,1) 
-                            #disabled: "" if toggle_auto_emit.state == "normal" else True
+                            disabled: True
                             on_press: 
                                 toggle_auto_emit.state = "normal"
                                 root.handle_laser()
@@ -173,8 +173,6 @@
                             state: "down"
                             on_press: 
                                 toggle_rect.state = "normal"
-                            on_release: 
-                                root.check("line")
 
                         #矩形移動
                         ToggleButton22:
@@ -184,8 +182,6 @@
                             #disabled: "" if toggle_line.state == "normal" else True
                             on_press: 
                                 toggle_line.state = "normal"
-                            on_release: 
-                                root.check("rect")
 
                     #2.2.2：移動量
                     Hbox:

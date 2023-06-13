@@ -1,8 +1,7 @@
 {
   "mode": "DEBUG",
   "FPS": 3,
-  "PORT-stage": "COM13",
-  "PORT-laser": "COM9",
-  "BAUDRATE-stage": 38400,
+  "PORT-stage": "COM1",
+  "PORT-laser": "COM2",
   "BAUDRATE-laser": 9600
 }
