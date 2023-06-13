@@ -122,7 +122,7 @@
                             id: left
                             MoveButton:
                                 id: left_button
-                                on_press: root.move_left()
+                                on_press: root.move('x', '-')
                                 on_release: root.stop_moving()
                                 MoveImage:
                                     id: left_arrow
@@ -133,7 +133,7 @@
                             id: top_and_bottom
                             MoveButton:
                                 id: top_button
-                                on_press: root.move_top()
+                                on_press: root.move('y', '+')
                                 on_release: root.stop_moving()
                                 MoveImage:
                                     id: top_arrow
@@ -141,7 +141,7 @@
                             
                             MoveButton:
                                 id: bottom_button
-                                on_press: root.move_bottom()
+                                on_press: root.move('y', '-')
                                 on_release: root.stop_moving()
                                 MoveImage:
                                     id: bottom_arrow
@@ -152,7 +152,7 @@
                             id: right
                             MoveButton:
                                 id: right_button
-                                on_press: root.move_right()
+                                on_press: root.move('x', '+')
                                 on_release: root.stop_moving()
                                 MoveImage:
                                     id: right_arrow

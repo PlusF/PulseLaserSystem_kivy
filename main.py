@@ -8,16 +8,6 @@ from PulseLaserController import PulseLaserController
 from ZaberController import ZaberController
 
 
-def control_auto_emission(func):
-    def wrapper(self, *args, **kwargs):
-        auto_on = self.ids.toggle_auto_emit.state == 'down'
-        if auto_on:
-            self.emit_laser()
-        ret = func(self, *args, **kwargs)
-        return ret
-    return wrapper
-
-
 class CrashHandler(ExceptionHandler):
     def handle_exception(self, inst):
         print(inst)
@@ -43,26 +33,29 @@ class MainWindow(BoxLayout):
         self.laser = PulseLaserController(self.cl)
         self.stage = ZaberController(self.cl)
 
+        self.move_funcs = {
+            'x': {
+                '+': self.stage.move_right,
+                '-': self.stage.move_left
+            },
+            'y': {
+                '+': self.stage.move_top,
+                '-': self.stage.move_bottom
+            }
+        }
+
         Clock.schedule_interval(self.update_position, 0.1)  # 0.1秒ごとに位置を更新．
 
     def update_position(self, dt):
         self.pos_x, self.pos_y = self.stage.get_position_all()
 
-    @control_auto_emission
-    def move_top(self):
-        self.stage.move_top(self.vel)
+    def move(self, axis: str, direction: str):
+        auto_on = self.ids.toggle_auto_emit.state == 'down'
+        move_func = self.move_funcs[axis][direction]
 
-    @control_auto_emission
-    def move_bottom(self):
-        self.stage.move_bottom(self.vel)
-
-    @control_auto_emission
-    def move_left(self):
-        self.stage.move_left(self.vel)
-
-    @control_auto_emission
-    def move_right(self):
-        self.stage.move_right(self.vel)
+        if auto_on:
+            self.emit_laser()
+        move_func(self.vel)
 
     def stop_moving(self):
         auto_on = self.ids.toggle_auto_emit.state == 'down'
