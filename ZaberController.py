@@ -15,14 +15,12 @@ class ZaberController:
         self.unit_pos = Units.LENGTH_MICROMETRES
         self.unit_vel = Units.VELOCITY_MICROMETRES_PER_SECOND
 
-        self.default_position = [25400, 25400]
-
-        self.port = cl.port_stage
+        self.default_position = (25400, 25400)
 
         if cl.mode == 'DEBUG':
             self.connection = DebugConnection()
         elif cl.mode == 'RELEASE':
-            self.connection = Connection.open_serial_port(self.port)
+            self.connection = Connection.open_serial_port(cl.port_stage)
 
         # [0]がパソコンに直接つながれているアクチュエータ，[1]が連結されたもう一つのアクチュエータ
         self.device_x, self.device_y = self.connection.detect_devices()[:2]
@@ -75,11 +73,11 @@ class ZaberController:
     def get_position_y(self):
         return self.device_y.get_position(unit=self.unit_pos)
 
-    # x,y座標をリストにして返す
+    # 現在のx, y座標を返す
     def get_position_all(self):
         x = self.get_position_x()
         y = self.get_position_y()
-        return [x, y]
+        return x, y
 
     def stop_x(self):
         self.device_x.stop()
