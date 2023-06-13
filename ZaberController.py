@@ -23,7 +23,7 @@ class ZaberController:
             self.connection = Connection.open_serial_port(cl.port_stage)
 
         # [0]がパソコンに直接つながれているアクチュエータ，[1]が連結されたもう一つのアクチュエータ
-        self.device_x, self.device_y = self.connection.detect_devices()[:2]
+        self.device_x, self.device_y, *_ = self.connection.detect_devices()
 
     def move_top(self, vel: float):
         self.device_y.move_velocity(vel, unit=self.unit_vel)
