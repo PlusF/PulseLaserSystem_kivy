@@ -21,7 +21,7 @@ class MainWindow(BoxLayout):
     delta_y = NumericProperty(50)
     freq_list = ListProperty([16, 50, 100, 500, 1000, 5000, 10000])
     vel_list = ListProperty([0.5, 1, 5, 10, 50, 100, 500, 1000, 5000, 10000])
-    Window.size = (350, 700)
+    Window.size = (350, 650)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
