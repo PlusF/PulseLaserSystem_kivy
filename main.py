@@ -20,7 +20,7 @@ class MainWindow(BoxLayout):
     delta_x = NumericProperty(100)
     delta_y = NumericProperty(50)
     freq_list = ListProperty([16, 50, 100, 500, 1000, 5000, 10000])
-    vel_list = ListProperty([0.05, 0.1, 0.5, 1, 5, 10, 50, 100, 500, 1000, 5000, 10000])
+    vel_list = ListProperty([0.5, 1, 5, 10, 50, 100, 500, 1000, 5000, 10000])
     Window.size = (350, 700)
 
     def __init__(self, **kwargs):
@@ -197,7 +197,7 @@ class MainWindow(BoxLayout):
         except ValueError:
             print('invalid vel input')
             return
-        vel = max(0.05, vel)
+        vel = max(0.5, vel)
         vel = min(10000.0, vel)
         self.ids.vel_input.text = str(vel)
         self.vel = vel
