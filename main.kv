@@ -174,14 +174,14 @@
                         text: "X [μm]: "
                     Label22:
                         id: X
-                        text: str(root.pos_x)
-                
+                        text: str(f'{root.pos_x:.03f}')
+
                 Hbox:
                     Label22:
                         text: "Y [μm]: "
                     Label22:
                         id: Y
-                        text: str(root.pos_y)
+                        text: str(f'{root.pos_y:.03f}')
         Widget:
             id: separator
             size_hint_y: 0.2
