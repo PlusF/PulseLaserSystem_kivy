@@ -128,7 +128,7 @@ class MainWindow(BoxLayout):
     def update_position(self, dt):
         # 位置情報の更新．Clockによって定期実行される．定期実行のスパンはConfigによって定められている．
         x, y = self.stage.get_position_all()
-        self.pos_x, self.pos_y = x, 25400 - y  # y軸アクチュエータの取付方向が上下反転
+        self.pos_x, self.pos_y = x, 25400.032 - y  # y軸アクチュエータの取付方向が上下反転
 
     def move(self, axis: str, direction: str):
         # 上下左右の移動をつかさどる関数．コードの反復を避けるために統一させた．
