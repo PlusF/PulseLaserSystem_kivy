@@ -1,7 +1,7 @@
 from kivy.app import App
 from kivy.base import ExceptionManager, ExceptionHandler
 from kivy.core.window import Clock, Window
-from kivy.properties import NumericProperty
+from kivy.properties import NumericProperty, ListProperty
 from kivy.uix.boxlayout import BoxLayout
 from ConfigLoader import ConfigLoader
 from PulseLaserController import PulseLaserController
@@ -19,6 +19,8 @@ class MainWindow(BoxLayout):
     pos_y = NumericProperty(0)
     delta_x = NumericProperty(100)
     delta_y = NumericProperty(50)
+    freq_list = ListProperty([16, 50, 100, 500, 1000, 5000, 10000])
+    vel_list = ListProperty([0.05, 0.1, 0.5, 1, 5, 10, 50, 100, 500, 1000, 5000, 10000])
     Window.size = (350, 700)
 
     def __init__(self, **kwargs):
@@ -187,6 +189,7 @@ class MainWindow(BoxLayout):
         freq = max(16, freq)
         freq = min(10000, freq)
         self.ids.freq_input.text = str(freq)
+        self.freq = freq
 
     def check_vel(self, vel_str: str):
         # テキストが変更されると呼び出される．既定の範囲内に収めさせる．
@@ -198,21 +201,20 @@ class MainWindow(BoxLayout):
         vel = max(0.05, vel)
         vel = min(10000.0, vel)
         self.ids.vel_input.text = str(vel)
+        self.vel = vel
 
     def set_freq_from_slider(self, value: int):
         # スライダーでは離散的にキリの良い値を指定できるように
         # リストの長さとスライダーの値の範囲が合致している必要あり
         index = int(value)
-        freq_list = [16, 50, 100, 500, 1000, 5000, 10000]
-        self.freq = freq_list[index]
+        self.freq = self.freq_list[index]
         self.ids.freq_input.text = str(self.freq)
 
     def set_vel_from_slider(self, value: int):
         # スライダーでは離散的にキリの良い値を指定できるように
         # リストの長さとスライダーの値の範囲が合致している必要あり
         index = int(value)
-        vel_list = [1, 5, 10, 50, 100, 500, 1000]
-        self.vel = vel_list[index]
+        self.vel = self.vel_list[index]
         self.ids.vel_input.text = str(self.vel)
 
     def start_program_mode(self):

@@ -161,9 +161,9 @@
                     Slider:
                         id: vel_slider
                         min: 0
-                        max: 6
+                        max: len(root.vel_list) - 1
                         step: 1
-                        value: 0
+                        value: 3
                         on_value: root.set_vel_from_slider(self.value)
         # 3： xy座標
         Hbox:
@@ -213,7 +213,7 @@
                     Slider:
                         id: freq_slider
                         min: 0
-                        max: 6
+                        max: len(root.freq_list) - 1
                         step: 1
                         value: 0
                         on_value:
