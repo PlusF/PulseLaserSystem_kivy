@@ -1,31 +1,243 @@
 #:kivy 1.0.9
+<MoveButton@Button>:
+    background_color: (166/255,166/255,166/255,1)
+<MoveImage@Image>:
+    center_x: self.parent.center_x
+    center_y: self.parent.center_y
+
+<Vbox@BoxLayout>:
+    orientation: "vertical"
+<Hbox@BoxLayout>:
+    orientation: "horizontal"
+
+<Label22@Label>:
+    font_size: 22
+<TextInput22@TextInput>:
+    font_size: 22
+<ToggleButton22@ToggleButton>:
+    font_size: 22
+<Button22@Button>:
+    font_size: 22
 
 <MainWindow>:
-    BoxLayout:
-        center_x: root.width / 2
-        center_y: root.height / 2
-        orientation: "vertical"
+    # メインのウインドウ
+    Vbox:
+        # 1： 移動，オートか手動か
+        TabbedPanel:
+            size_hint_y: 2
+            do_default_tab: False
+            tab_width: self.parent.width / 2.03
+            # 1.1：手動で移動するモード
+            TabbedPanelItem:
+                text: "Manual Mode"
+                # 十字キー
+                GridLayout:
+                    rows: 3
+                    cols: 3
+                    Button:
+                        disabled: True
+                    MoveButton:
+                        id: move_top
+                        on_press: root.move('y', '+')
+                        on_release: root.stop_moving('y', '+')
+                        MoveImage:
+                            source: "source/up.png"
+                    Button:
+                        disabled: True
+                    MoveButton:
+                        id: move_left
+                        on_press: root.move('x', '-')
+                        on_release: root.stop_moving('x', '-')
+                        MoveImage:
+                            source: "source/left.png"
+                    Button:
+                        disabled: True
+                        background_color: (0, 0, 0, 1)
+                    MoveButton:
+                        id: move_right
+                        on_press: root.move('x', '+')
+                        on_release: root.stop_moving('x', '+')
+                        MoveImage:
+                            source: "source/right.png"
+                    Button:
+                        disabled: True
+                    MoveButton:
+                        id: move_bottom
+                        on_press: root.move('y', '-')
+                        on_release: root.stop_moving('y', '-')
+                        MoveImage:
+                            source: "source/down.png"
+                    Button:
+                        disabled: True
 
-        Button:
-            id: button_top
-            text:
-            on_press:
-            on_release:
+            # 1.2： オートで移動するモード
+            TabbedPanelItem:
+                text: "Program Mode"
+                Vbox:
+                    # 1.2.1： 直線移動か矩形移動か
+                    Hbox:
+                        # 直線移動
+                        ToggleButton22:
+                            id: toggle_line
+                            text: "Line"
+                            color: (1,1,1,1) if toggle_rect.state == "normal" else (0.5,0.5,0.5,1)
+                            #disabled: "" if toggle_rect.state == "normal" else True
+                            state: "down"
+                            on_press: 
+                                toggle_rect.state = "normal"
 
-        Button:
-            id: button_bottom
-            text:
-            on_press:
-            on_release:
+                        # 矩形移動
+                        ToggleButton22:
+                            id: toggle_rect
+                            text: "Rect"
+                            color: (1,1,1,1) if toggle_line.state == "normal" else (0.5,0.5,0.5,1)
+                            #disabled: "" if toggle_line.state == "normal" else True
+                            on_press: 
+                                toggle_line.state = "normal"
 
-        Button:
-            id: button_left
-            text:
-            on_press:
-            on_release:
+                    # 1.2.2： 移動量
+                    Hbox:
+                        # 移動量
+                        Vbox:
+                            size_hint_x:2
+                            Hbox:
+                                Label22:
+                                    text: "ΔX [μm]"
+                                TextInput22:
+                                    id: deltaX
+                                    text: str(root.delta_x)
+                                    on_text:
+                                        root.delta_x = int(self.text)
+                            Hbox:
+                                Label22:
+                                    text: "ΔY [μm]"
+                                TextInput22:
+                                    id: deltaY
+                                    text: str(root.delta_y)
+                                    on_text:
+                                        root.delta_y = int(self.text)
 
-        Button:
-            id: button_right
-            text:
-            on_press:
-            on_release:
+                        # 移動開始
+                        Vbox:
+                            Button22:
+                                id: program_mode_start
+                                text:"Start"
+                                on_press:
+                                    root.start_program_mode()
+                                    
+                    # 1.2.3： 図形として描画
+                    Hbox:
+                        size_hint_y:2
+                        canvas:
+                            Line:
+                                id: laser_line
+                                points:(self.x+self.width/2, self.y+self.height/2, self.x+self.width/2+root.delta_x , self.y+self.height/2+root.delta_y) if toggle_line.state == "down" else (0,0)
+                                width:1
+                            
+                            Line:
+                                id: laser_rect
+                                points:(self.x+self.width/2, self.y+self.height/2, self.x+self.width/2+root.delta_x, self.y+self.height/2, self.x+self.width/2+root.delta_x, self.y+self.height/2+root.delta_y, self.x+self.width/2, self.y+self.height/2+root.delta_y, self.x+self.width/2, self.y+self.height/2) if toggle_rect.state == "down" else (0,0)
+                                width:1
+
+                            Ellipse:
+                                pos: (self.x+self.width/2-4, self.y+self.height/2-4)
+                                size: 8,8
+
+        # 2： 移動速度
+        Vbox:
+            size_hint_y: 0.5
+            Vbox:
+                Hbox:
+                    Label22:
+                        id: vel_text
+                        text: "Velocity [μm/s]: "
+
+                    TextInput22:
+                        id: vel_input
+                        text: "1.0"
+                        on_text:　root.check_vel(self.text)
+
+                Hbox:
+                    Slider:
+                        id: vel_slider
+                        min: 0
+                        max: 6
+                        step: 1
+                        value: 0
+                        on_value: root.set_vel_from_slider(self.value)
+        # 3： xy座標
+        Hbox:
+            size_hint_y: 0.5
+            Vbox:
+                Hbox:
+                    Label22:
+                        text: "X [μm]: "
+                    Label22:
+                        id: X
+                        text: str(root.pos_x)
+                
+                Hbox:
+                    Label22:
+                        text: "Y [μm]: "
+                    Label22:
+                        id: Y
+                        text: str(root.pos_y)
+        Widget:
+            id: separator
+            size_hint_y: 0.2
+            padding: [0, 2, 0, 2]
+            canvas:
+                Color:
+                    rgb: 0.3, 0.3, 0.3
+                Rectangle:
+                    pos: 0, separator.center_y
+                    size: separator.width, 5
+
+        # 4: レーザー周波数
+        Vbox:
+            # 4.1: レーザー周波数
+            Vbox:
+                size_hint_y: 1
+                Hbox:
+                    Label22:
+                        id: freq_text
+                        text: "Frequency [Hz]: "
+
+                    TextInput22:
+                        id: freq_input
+                        text: "16"
+                        foreground_color: (0,0,0,1)
+                        on_text:
+                            root.check_freq(self.text)
+                Hbox:
+                    Slider:
+                        id: freq_slider
+                        min: 0
+                        max: 6
+                        step: 1
+                        value: 0
+                        on_value:
+                            root.set_freq_from_slider(self.value)
+
+            # 4.2: レーザー，移動している時だけONか，常時ONか
+            Hbox:
+                # 移動している時だけON
+                ToggleButton22:
+                    id: toggle_auto_emit
+                    text: "Auto"
+                    #押した時はdown,押してない時はnormal
+                    color: (1,1,1,1) if toggle_manual_emit.state == "normal" else (0.5,0.5,0.5,1)
+                    disabled: True
+                    on_press:
+                        toggle_manual_emit.state = "normal"
+                        root.stop_laser()
+
+                # 常時ON
+                ToggleButton22:
+                    id: toggle_manual_emit
+                    text:"Emit / Stop"
+                    color:(1,1,1,1) if toggle_auto_emit.state == "normal" else (0.5,0.5,0.5,1)
+                    disabled: True
+                    on_press:
+                        toggle_auto_emit.state = "normal"
+                        root.handle_laser()
