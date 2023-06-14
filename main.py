@@ -31,7 +31,7 @@ class MainWindow(BoxLayout):
 
         # 初期設定（GUIの初期設定と合致している必要あり）
         self.freq: int = 16
-        self.vel: float = 1.0
+        self.vel: float = 1000.0
 
         # DEBUG or RELEASEは各クラス内で処理してもらい，main側は意識しなくてよいように
         self.laser = PulseLaserController(self.cl)
